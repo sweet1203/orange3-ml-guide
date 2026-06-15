@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📕 교사용 — Orange3 dataset 분석 완료 (결론 질문 예상답안)</title>
+<style>
+  :root{
+    --ink:#222; --muted:#666; --line:#e3e3e3; --bg:#f5f3f7; --card:#fff;
+    --cls:#e65100; --cls-l:#fff3e0; --uns:#00695c; --uns-l:#e0f2f1; --reg:#1b5e20; --reg-l:#e8f5e9;
+    --ans:#1565c0; --ans-l:#e8f1fb; --ev:#6a1b9a; --ev-l:#f3e9f8;
+    --shadow:0 2px 10px rgba(0,0,0,.07); --radius:14px;
+  }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:16px;
+    font-family:"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  .wrap{max-width:980px;margin:0 auto;padding:0 18px 80px}
+  .hero{background:linear-gradient(135deg,#5e35b1,#4527a0 60%,#311b92);color:#fff;padding:36px 26px 28px;border-radius:0 0 26px 26px;box-shadow:0 6px 20px rgba(49,27,146,.3)}
+  .hero h1{margin:0 0 6px;font-size:27px} .hero p{margin:0;opacity:.95;font-size:15px}
+  .stamp{display:inline-block;margin-top:14px;background:#c62828;color:#fff;font-weight:800;padding:6px 14px;border-radius:8px;font-size:13px;letter-spacing:.5px}
+  /* 목차 */
+  .toc{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}
+  .toc a{flex:1;min-width:210px;text-decoration:none;color:#fff;border-radius:12px;padding:14px 16px;font-weight:700;box-shadow:var(--shadow);display:block}
+  .toc a small{display:block;font-weight:600;opacity:.9;font-size:12px;margin-top:3px}
+  .toc .c1{background:linear-gradient(135deg,#fb8c00,#e65100)} .toc .c2{background:linear-gradient(135deg,#26a69a,#00695c)} .toc .c3{background:linear-gradient(135deg,#66bb6a,#1b5e20)} .toc .c4{background:linear-gradient(135deg,#26c6da,#00838f)}
+  section{margin-top:34px}
+  .sec-h{display:flex;align-items:center;gap:12px;border-radius:14px;padding:14px 18px;color:#fff;font-size:21px;font-weight:800;box-shadow:var(--shadow)}
+  .sec-h .tag{background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.5);padding:3px 10px;border-radius:8px;font-size:12px;font-weight:700}
+  .h-cls{background:linear-gradient(135deg,#fb8c00,#e65100)} .h-uns{background:linear-gradient(135deg,#26a69a,#00695c)} .h-reg{background:linear-gradient(135deg,#66bb6a,#1b5e20)} .h-iris{background:linear-gradient(135deg,#26c6da,#00838f)}
+  .meta{font-size:13.5px;color:var(--muted);margin:10px 2px 0}
+  .qa{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin:14px 0;box-shadow:var(--shadow)}
+  .qa .q{font-weight:800;font-size:16px;margin:0 0 8px}
+  .qa .q .qn{display:inline-block;background:var(--ans);color:#fff;border-radius:6px;padding:1px 9px;margin-right:7px;font-size:14px}
+  .ans{background:var(--ans-l);border-left:5px solid var(--ans);border-radius:10px;padding:11px 14px;margin:8px 0}
+  .ans b{color:var(--ans)}
+  .ev{background:var(--ev-l);border-left:5px solid var(--ev);border-radius:10px;padding:10px 14px;margin:8px 0;font-size:14px}
+  .ev b{color:var(--ev)} .ev .lab{font-weight:800;color:var(--ev);font-size:12px;letter-spacing:.5px;display:block;margin-bottom:3px}
+  code{background:#eceff1;color:#37474f;padding:2px 7px;border-radius:6px;font-size:13.5px;font-weight:700}
+  table{width:100%;border-collapse:collapse;margin:8px 0;font-size:14px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{padding:8px 11px;text-align:left;border-bottom:1px solid var(--line)} th{background:#455a64;color:#fff} tr:last-child td{border-bottom:0}
+  .pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12.5px;font-weight:700;color:#fff;margin:1px}
+  .p-hi{background:#2e7d32} .p-mid{background:#f9a825} .p-lo{background:#c62828}
+  .keypt{background:#fffde7;border:1px dashed #fbc02d;border-radius:10px;padding:10px 14px;margin:10px 0;font-size:14.5px}
+  .keypt b{color:#f57f17}
+  footer{margin-top:40px;text-align:center;color:var(--muted);font-size:13px}
+  .totop{position:fixed;right:18px;bottom:18px;background:#4527a0;color:#fff;border:none;width:46px;height:46px;border-radius:50%;font-size:19px;cursor:pointer;box-shadow:var(--shadow);display:none}
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>📕 Orange3 dataset 분석 완료 — 결론 질문 예상답안</h1>
+  <p>분류(zoo) · 비지도(mathematics-football) · 회귀(advertising) — 실습 결론 질문에 대한 교사용 모범답안과 분석 근거</p>
+  <span class="stamp">🔒 교사용 · 학생 배포 금지</span>
+</header>
+
+<div class="wrap">
+  <div class="toc">
+    <a class="c1" href="#cls">🐯 분류 — zoo<small>동물 분류 AI · 4문항</small></a>
+    <a class="c2" href="#uns">⚽📐 비지도 — math-football<small>끼리끼리 묶기 · 4문항</small></a>
+    <a class="c4" href="#iris">🌸 비지도 — iris<small>붓꽃 군집 · 4문항</small></a>
+    <a class="c3" href="#reg">📺💰 회귀 — advertising<small>광고비→판매량 · 4문항</small></a>
+  </div>
+
+  <div class="keypt">📌 <b>사용법</b> — 학생 가이드(분류/비지도/회귀 HTML)의 ‘실습 결론 질문’과 번호가 1:1 대응합니다. <b>예상답안(파란 박스)</b>은 모범 방향이고, <b>분석 근거(보라 박스)</b>는 실제 데이터를 계산한 값이라 학생 답을 채점·보충할 때 쓰세요. R²·정확도 등 수치는 위젯 설정(랜덤성)에 따라 ±조금 달라질 수 있습니다.</div>
+
+  <!-- ===================== 분류 ===================== -->
+  <section id="cls">
+    <div class="sec-h h-cls"><span class="tag">분류 · 지도학습</span> 🐯 zoo — 동물 분류 AI</div>
+    <p class="meta">동물 101마리 · 특징 16개 · 정답 <code>type</code> 7종 (mammal 41 / bird 20 / fish 13 / invertebrate 10 / insect 8 / reptile 5 / amphibian 4)</p>
+
+    <div class="qa">
+      <p class="q"><span class="qn">Q1</span> AI가 가장 먼저 던지는 질문(가장 결정적인 특징)은?</p>
+      <div class="ans"><b>예상답안</b> — 보통 <b>다리 수(legs)</b> 또는 <b>젖(milk)</b> 같은 특징을 맨 먼저 묻는다. 특히 “<b>젖을 먹이나요(milk)?</b> → 예 → 포유류”처럼, 한 가지 특징만으로도 큰 무리를 정확히 갈라낼 수 있어 가장 윗가지에 온다.</div>
+      <div class="ev"><span class="lab">📊 분석 근거 (정보이득=많이 갈라줄수록 큼)</span>
+        legs <b>1.36</b> · milk <b>0.97</b> · toothed 0.87 · eggs 0.83 · hair 0.79 · feathers 0.72.
+        <br>→ <b>milk=1인 동물 41마리는 전부 포유류</b>(예외 0). “젖을 먹이면 100% 포유류”라는 완벽한 규칙이라 트리 윗부분에 자주 등장. (트리 설정에 따라 root는 <code>legs</code>나 <code>milk</code> 등으로 표시될 수 있음 — 둘 다 정답으로 인정)</div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="qn">Q2</span> 세 모델 중 정확도가 가장 높은 것은? zoo가 정확도 높은 이유는?</p>
+      <div class="ans"><b>예상답안</b> — <code>Tree</code>·<code>kNN</code>·<code>Naive Bayes</code> <b>모두 정확도(CA)가 대체로 90% 이상</b>으로 높게 나온다(어느 하나가 압도하기보단 셋 다 우수). 이유: 특징이 깔끔한 예/아니오 값이고, 동물 종류마다 특징 차이가 뚜렷해 <b>구분이 쉬운 데이터</b>이기 때문.</div>
+      <div class="ev"><span class="lab">📊 분석 근거</span> 데이터가 작고(101) 규칙성이 강해, 일반적인 교실 실습에서 세 모델 CA가 보통 0.9~0.97 범위. 모델 간 차이는 작음(설정·교차검증에 따라 순위가 바뀔 수 있어 “셋 다 높다”가 핵심).</div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="qn">Q3</span> 서로 헷갈린 동물 종류가 있었나? 왜?</p>
+      <div class="ans"><b>예상답안</b> — 데이터가 <b>적은 소수 종류</b>(양서류 4·파충류 5·곤충 8·무척추 10)에서 혼동이 생기기 쉽다. 예: <b>양서류↔파충류</b>처럼 특징이 비슷한 무리. 반대로 데이터가 많고 특징이 뚜렷한 <b>포유류·새</b>는 거의 안 틀린다.</div>
+      <div class="ev"><span class="lab">📊 분석 근거</span> 클래스 불균형: amphibian 4·reptile 5마리뿐 → 배울 예시가 적어 모델이 약함. Confusion Matrix의 대각선(정답) 밖 칸은 대개 이런 소수·유사 클래스 사이에서 나타남.</div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="qn">Q4</span> ‘분류(지도학습)’의 핵심을 한 문장으로?</p>
+      <div class="ans"><b>예상답안</b> — “<b>정답(종류)이 붙은 데이터로 ‘특징 → 종류’ 규칙을 배워, 정답을 모르는 새 동물의 종류를 맞히는 것</b>.” 핵심 키워드: <b>정답을 보고 배운다 + 종류(범주)를 예측</b>.</div>
+    </div>
+  </section>
+
+  <!-- ===================== 비지도 ===================== -->
+  <section id="uns">
+    <div class="sec-h h-uns"><span class="tag">비지도 · 군집</span> ⚽📐 mathematics-football</div>
+    <p class="meta">학생 11명 · 점수 2개(mathematics, football) · <b>정답(그룹) 없음</b> · k-평균 k=3</p>
+
+    <div class="qa">
+      <p class="q"><span class="qn">Q1</span> 정답을 안 알려줬는데도 묶였나? 무엇을 뜻하나?</p>
+      <div class="ans"><b>예상답안</b> — 그렇다. 정답을 주지 않아도 <b>점수가 비슷한 학생끼리</b> 저절로 무리가 됐다. 이는 비지도학습이 <b>데이터 자체에 숨어 있는 패턴(닮은 정도)</b>을 찾아 묶는다는 뜻이다.</div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="qn">Q2</span> 각 군집은 어떤 학생 무리였나?</p>
+      <div class="ans"><b>예상답안</b> — 대략 세 무리로 나뉜다: <b>① 공부파</b>(수학↑·축구↓) <b>② 운동파</b>(수학↓·축구↑) <b>③ 올라운더</b>(둘 다 높음).</div>
+      <div class="ev"><span class="lab">📊 분석 근거 (k=3 실제 군집)</span>
+        <table>
+          <tr><th>군집</th><th>중심(수학, 축구)</th><th>학생</th></tr>
+          <tr><td><span class="pill p-mid">공부파</span></td><td>수학 75.8 · 축구 22.0</td><td>Cecilia, Ginny, Henry, Ivy</td></tr>
+          <tr><td><span class="pill p-hi">올라운더</span></td><td>수학 93.7 · 축구 77.7</td><td>Daniel, Fanny, Joseph</td></tr>
+          <tr><td><span class="pill p-lo">운동파</span></td><td>수학 35.8 · 축구 77.8</td><td>Andrew, Benjamin, Emma, Hannah</td></tr>
+        </table>
+        ※ 경계에 있는 학생(예: Henry 47·31)은 초기 중심점에 따라 소속이 조금 달라질 수 있음.</div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="qn">Q3</span> k를 2·4로 바꾸면? 정답 개수를 모를 때 k는?</p>
+      <div class="ans"><b>예상답안</b> — k를 바꾸면 묶음이 달라진다(k=2면 크게 두 덩어리, k=4면 더 잘게). 정답 개수를 모를 땐 <b>Scatter Plot에서 점이 자연스럽게 몇 덩어리로 보이는지</b> 관찰하거나 <b>여러 k를 비교</b>해 가장 ‘말이 되는’ k를 고른다. (정답이 없으니 절대적 정답 k도 없다.)</div>
+      <div class="ev"><span class="lab">📊 분석 근거</span> 이 데이터는 공부·운동·올라운더로 <b>k=3이 가장 해석하기 자연스러움</b>. k=2면 ‘올라운더’가 다른 무리에 흡수됨.</div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="qn">Q4</span> 왜 정확도(%)를 바로 못 구하나? 분류와의 차이는?</p>
+      <div class="ans"><b>예상답안</b> — <b>정답(라벨)이 없어</b> ‘맞다/틀리다’를 잴 기준 자체가 없기 때문이다. 그래서 정확도 대신 <b>‘잘 뭉쳐 있나’</b> 같은 다른 잣대로 평가한다. <b>분류=정답 있음(지도) / 군집=정답 없음(비지도)</b> 이 결정적 차이.</div>
+    </div>
+  </section>
+
+  <!-- ===================== 비지도 iris ===================== -->
+  <section id="iris">
+    <div class="sec-h h-iris"><span class="tag">비지도 · 군집</span> 🌸 iris — 붓꽃 군집</div>
+    <p class="meta">붓꽃 150송이 · 크기 4개(꽃받침·꽃잎 길이/너비) · 실제 품종 3종(setosa·versicolor·virginica)은 <b>숨기고</b> 군집 → 나중에 비교 · k=3</p>
+
+    <div class="qa">
+      <p class="q"><span class="qn">Q1</span> 품종을 안 알려줬는데 몇 무리로 묶였나?</p>
+      <div class="ans"><b>예상답안</b> — <b>3무리</b>(k=3으로 설정). 꽃잎·꽃받침 크기만으로도 점들이 자연스럽게 세 덩어리로 나뉜다.</div>
+      <div class="ev"><span class="lab">📊 분석 근거</span> 특히 <b>꽃잎(petal length·petal width)</b>이 품종을 가장 잘 가른다(그룹간/그룹내 분산비 petal≈20~24 vs sepal≈1~2). 그래서 Scatter 축을 꽃잎으로 두면 세 덩어리가 또렷.</div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="qn">Q2</span> 실제 품종(iris)으로 색을 바꾸면 얼마나 일치? 어떤 품종이 가장 확실히 따로?</p>
+      <div class="ans"><b>예상답안</b> — 약 <b>85~90% 일치</b>. 특히 <b>setosa는 100% 완벽히 따로</b> 묶인다(꽃잎이 확연히 작아 멀리 떨어져 있음). AI가 정답 없이도 실제 품종을 거의 찾아낸 것.</div>
+      <div class="ev"><span class="lab">📊 분석 근거 (군집 vs 실제 품종 교차표, 표준화 k-평균)</span>
+        <table>
+          <tr><th>품종</th><th>군집 일치</th><th>비고</th></tr>
+          <tr><td>setosa</td><td><span class="pill p-hi">50 / 50 (완벽)</span></td><td>한 군집에 100%</td></tr>
+          <tr><td>versicolor</td><td><span class="pill p-mid">대부분 일치</span></td><td>경계 일부 혼동</td></tr>
+          <tr><td>virginica</td><td><span class="pill p-mid">대부분 일치</span></td><td>경계 일부 혼동</td></tr>
+        </table>
+        전체 일치율 ≈ 약 125/150(83%)~90%. (Orange의 정규화·Re-runs 설정에 따라 ±조금)</div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="qn">Q3</span> 100% 일치하지 않은 이유? 어떤 두 품종이 헷갈렸나?</p>
+      <div class="ans"><b>예상답안</b> — <b>versicolor ↔ virginica</b>가 크기가 비슷해 경계에서 일부(약 15~25송이) 서로 섞였다. 두 품종은 꽃잎 크기가 연속적으로 겹치는 구간이 있어 ‘딱 잘라’ 나누기 어렵다.</div>
+      <div class="ev"><span class="lab">📊 분석 근거</span> setosa는 다른 둘과 멀리 떨어져 오류 0. 혼동은 전부 versicolor·virginica 사이에서 발생.</div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="qn">Q4</span> 비지도(군집)의 핵심을 한 문장으로?</p>
+      <div class="ans"><b>예상답안</b> — “<b>정답(라벨)을 주지 않아도, 데이터에 실제로 존재하는 자연스러운 그룹(품종)을 닮은 정도로 찾아내는 것</b>.” 핵심 키워드: <b>정답 없이 + 비슷한 것끼리 묶기</b>. (정답과 비교해보니 거의 맞았다는 점이 ‘발견’의 증거.)</div>
+    </div>
+  </section>
+
+  <!-- ===================== 회귀 ===================== -->
+  <section id="reg">
+    <div class="sec-h h-reg"><span class="tag">회귀 · 지도학습</span> 📺💰 advertising</div>
+    <p class="meta">가게 200곳 · 입력 광고비 3개(TV, Radio, Newspaper) · 정답 <b>Sales(판매량, 숫자)</b> · 선형회귀</p>
+
+    <div class="qa">
+      <p class="q"><span class="qn">Q1</span> 광고비가 늘수록 판매량은 어떻게 변했나?</p>
+      <div class="ans"><b>예상답안</b> — 광고비가 늘면 판매량도 <b>늘어난다(우상향 직선)</b>. 특히 TV 광고비와 판매량은 뚜렷한 우상향 관계.</div>
+      <div class="ev"><span class="lab">📊 분석 근거</span> TV↔Sales 상관 <b>+0.78</b>로 강한 양의 관계. Scatter Plot의 회귀선이 오른쪽 위로 향함.</div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="qn">Q2</span> 판매량과 가장 관계가 강한/약한 광고는?</p>
+      <div class="ans"><b>예상답안</b> — 가장 강한 건 <b>TV</b>, 그다음 <b>Radio</b>. <b>Newspaper(신문)는 거의 관계 없음</b>. 즉 같은 돈이면 TV·라디오 광고가 판매량에 더 효과적.</div>
+      <div class="ev"><span class="lab">📊 분석 근거 (판매량과의 관련도)</span>
+        <table>
+          <tr><th>광고</th><th>상관계수 r</th><th>회귀 영향(계수)</th><th>평가</th></tr>
+          <tr><td>TV</td><td>+0.78</td><td>+0.046</td><td><span class="pill p-hi">강함</span></td></tr>
+          <tr><td>Radio</td><td>+0.58</td><td>+0.189</td><td><span class="pill p-mid">중간</span></td></tr>
+          <tr><td>Newspaper</td><td>+0.23</td><td>−0.001 (≈0)</td><td><span class="pill p-lo">거의 무관</span></td></tr>
+        </table>
+        → 회귀계수에서 Newspaper는 사실상 0이라, 신문 광고비는 판매량 예측에 도움이 안 됨.</div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="qn">Q3</span> 우리 모델의 R²는 얼마? 무엇을 뜻하나?</p>
+      <div class="ans"><b>예상답안</b> — R²는 <b>약 0.9(0.90 안팎)</b>. <b>1에 가까울수록 예측이 정확</b>하다는 뜻으로, “광고비 3개로 판매량의 약 90%를 설명/예측할 수 있다”는 의미. 매우 좋은 편.</div>
+      <div class="ev"><span class="lab">📊 분석 근거</span> 세 광고비 모두 사용 시 R² <b>≈ 0.897</b>. (참고: TV 하나만 쓰면 R²≈0.61 → 변수를 더하니 예측력이 올라감.)</div>
+    </div>
+
+    <div class="qa">
+      <p class="q"><span class="qn">Q4</span> 회귀가 분류와 다른 점? 회귀의 핵심은?</p>
+      <div class="ans"><b>예상답안</b> — 분류는 <b>종류(글자·범주)</b>를 맞히고, 회귀는 <b>숫자(연속값)</b>를 맞힌다. 둘 다 정답이 있는 <b>지도학습</b>. 회귀의 핵심: “<b>입력으로 수치(판매량 등)를 예측하는 직선/공식을 데이터에서 찾는 것</b>.”</div>
+    </div>
+
+    <div class="keypt">🔗 <b>세 실습을 잇는 한 줄</b> — 정답이 <b>글자(종류)</b>면 <b>분류</b>, <b>숫자</b>면 <b>회귀</b>(둘 다 지도학습), 정답이 <b>아예 없으면</b> <b>군집(비지도)</b>. 학생이 이 한 줄을 스스로 말할 수 있으면 단원 목표 달성!</div>
+  </section>
+
+  <footer>📕 교사용 자료 · 4-2 인공지능 「기계학습」 · Orange3 dataset 분석 완료<br>
+  분석 근거 수치는 zoo(biolab/orange3) · advertising · mathematics-football 원자료를 직접 계산한 값</footer>
+</div>
+<button class="totop" id="totop" title="맨 위로">↑</button>
+<script>
+  (function(){var b=document.getElementById('totop');if(!b)return;
+   window.addEventListener('scroll',function(){b.style.display=window.scrollY>400?'block':'none';});
+   b.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});})();
+</script>
+</body>
+</html>

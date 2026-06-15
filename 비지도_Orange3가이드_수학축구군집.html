@@ -285,12 +285,12 @@
 </script>
 <script>
   (function(){
-    var SCRIPT_URL = "PASTE_WEBAPP_URL"; // ← 배포한 Apps Script 웹앱 URL(.../exec)로 교체
+    var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxNpsHhL8ZUKR2FK_QWdPI1e6EDi9IC00c90bhCiCeP2krzxSZ3tWcvzD5JKyMrKjDgQA/exec"; // ← 배포한 Apps Script 웹앱 URL(.../exec)로 교체
     var f=document.getElementById('quizForm'); if(!f) return;
     var s=document.getElementById('formStatus');
     f.addEventListener('submit',function(ev){
       ev.preventDefault();
-      if(!SCRIPT_URL || SCRIPT_URL==="PASTE_WEBAPP_URL"){ s.className='formstatus err'; s.textContent='⚠️ 아직 제출 주소가 설정되지 않았어요. 선생님께 알려주세요.'; return; }
+      if(!SCRIPT_URL || SCRIPT_URL==="https://script.google.com/macros/s/AKfycbxNpsHhL8ZUKR2FK_QWdPI1e6EDi9IC00c90bhCiCeP2krzxSZ3tWcvzD5JKyMrKjDgQA/exec"){ s.className='formstatus err'; s.textContent='⚠️ 아직 제출 주소가 설정되지 않았어요. 선생님께 알려주세요.'; return; }
       if(!f.reportValidity()) return;
       var btn=f.querySelector('.submitbtn');
       var body=new URLSearchParams(new FormData(f));

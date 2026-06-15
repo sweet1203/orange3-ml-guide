@@ -73,6 +73,22 @@
   .tbody{padding:6px 18px 14px} .tbody dt{font-weight:700;color:var(--red);margin-top:10px} .tbody dd{margin:3px 0 0}
   footer{margin-top:40px;text-align:center;color:var(--muted);font-size:13px}
   .totop{position:fixed;right:18px;bottom:18px;background:var(--teal);color:#fff;border:none;width:48px;height:48px;border-radius:50%;font-size:20px;cursor:pointer;box-shadow:var(--shadow-h);display:none}
+
+  /* 홈버튼 */
+  .homebar{display:flex;justify-content:center;margin:18px 0 4px}
+  .homebtn{display:inline-flex;align-items:center;gap:7px;text-decoration:none;font-weight:800;font-size:15px;color:#fff;background:var(--teal);padding:10px 20px;border-radius:999px;box-shadow:var(--shadow);transition:transform .15s}
+  .homebtn:hover{transform:translateY(-2px)}
+  /* 제출 폼 */
+  .quiz .idrow{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  .quiz label{font-weight:700;font-size:14px;display:flex;flex-direction:column;gap:4px;flex:1;min-width:150px}
+  .quiz input,.quiz textarea{font:inherit;border:1.5px solid var(--line);border-radius:10px;padding:9px 11px;width:100%;background:#fff;color:var(--ink)}
+  .quiz input:focus,.quiz textarea:focus{outline:none;border-color:var(--teal)}
+  .qf{margin:12px 0} .qf .qq{font-weight:700;color:#1565c0;margin:0 0 6px}
+  .quiz textarea{resize:vertical}
+  .submitbtn{margin-top:8px;background:var(--teal);color:#fff;border:none;font-weight:800;font-size:16px;padding:12px 22px;border-radius:12px;cursor:pointer;box-shadow:var(--shadow)}
+  .submitbtn:hover{filter:brightness(1.06)} .submitbtn:disabled{opacity:.55;cursor:default}
+  .formstatus{margin:12px 0 0;font-weight:700;min-height:1.2em} .formstatus.ok{color:#2e7d32} .formstatus.err{color:#c62828}
+  .formnote{font-size:12.5px;color:var(--muted);margin:4px 0 0}
 </style>
 </head>
 <body>
@@ -89,6 +105,7 @@
 </header>
 
 <div class="wrap">
+  <div class="homebar"><a class="homebtn" href="index.html">🏠 실습 목록으로</a></div>
   <div class="callout c-goal">🎯 <b>오늘의 목표</b> — 붓꽃의 <b>꽃잎·꽃받침 크기</b>만 보고, 품종(정답)을 안 알려줘도 AI가 <b>비슷한 꽃끼리 묶는</b> 걸 확인하고, 그 묶음이 <b>실제 품종과 얼마나 맞는지</b> 비교한다.</div>
 
   <!-- 1 데이터 -->
@@ -188,10 +205,20 @@
   <section>
     <h2><span class="num">5</span> 실습 결론 질문 🧐 <span style="font-size:13px;color:var(--muted);font-weight:600">(실습 끝나고 답해보기)</span></h2>
     <div class="card">
-      <div class="qbox"><span class="q">Q1.</span> 품종(정답)을 안 알려줬는데도 꽃들이 <b>몇 무리</b>로 묶였나요?<hr class="ln"><span style="color:var(--muted);font-size:13px">✏️ 적어보기</span></div>
-      <div class="qbox"><span class="q">Q2.</span> Color를 <code>iris</code>(실제 품종)로 바꿨을 때, AI의 군집과 <b>얼마나 일치</b>했나요? 어떤 품종이 가장 <b>확실히 따로</b> 묶였나요?<hr class="ln"><span style="color:var(--muted);font-size:13px">✏️ 적어보기</span></div>
-      <div class="qbox"><span class="q">Q3.</span> <b>100% 완벽히</b> 일치하진 않았다면, 어떤 두 품종이 서로 닮아 경계에서 헷갈렸을까요?<hr class="ln"><span style="color:var(--muted);font-size:13px">✏️ 적어보기</span></div>
-      <div class="qbox"><span class="q">Q4.</span> 이 실습으로 알게 된 <b>비지도(군집)의 핵심</b>을 한 문장으로 정리하면?<hr class="ln"><span style="color:var(--muted);font-size:13px">✏️ 적어보기</span></div>
+      <form class="quiz" id="quizForm">
+        <input type="hidden" name="실습" value="비지도(iris) 붓꽃군집">
+        <div class="idrow">
+          <label>학번 <input name="학번" required placeholder="예: 3217" inputmode="numeric" autocomplete="off"></label>
+          <label>이름 <input name="이름" required placeholder="홍길동" autocomplete="off"></label>
+        </div>
+        <div class="qf"><p class="qq">Q1. 품종(정답)을 안 알려줬는데도 꽃들이 몇 무리로 묶였나요?</p><textarea name="q1" rows="3" placeholder="여기에 적어보기"></textarea></div>
+        <div class="qf"><p class="qq">Q2. Color를 iris(실제 품종)로 바꿨을 때, AI의 군집과 얼마나 일치했나요? 어떤 품종이 가장 확실히 따로 묶였나요?</p><textarea name="q2" rows="3" placeholder="여기에 적어보기"></textarea></div>
+        <div class="qf"><p class="qq">Q3. 100% 완벽히 일치하진 않았다면, 어떤 두 품종이 서로 닮아 경계에서 헷갈렸을까요?</p><textarea name="q3" rows="3" placeholder="여기에 적어보기"></textarea></div>
+        <div class="qf"><p class="qq">Q4. 이 실습으로 알게 된 비지도(군집)의 핵심을 한 문장으로 정리하면?</p><textarea name="q4" rows="3" placeholder="여기에 적어보기"></textarea></div>
+        <button type="submit" class="submitbtn">📤 제출하기</button>
+        <p class="formstatus" id="formStatus" role="status" aria-live="polite"></p>
+        <p class="formnote">제출하면 선생님 구글시트로 바로 전송돼요. (한 번만 제출)</p>
+      </form>
     </div>
   </section>
 
@@ -211,6 +238,7 @@
     <div class="callout c-info">📌 <b>분류와 비교</b>: 분류(동물 zoo)는 정답을 보고 배웠지만, 오늘은 <b>정답 없이</b> 묶었어요. 그런데도 실제 품종을 거의 찾아낸 게 비지도의 힘!</div>
   </section>
 
+  <div class="homebar"><a class="homebtn" href="index.html">🏠 실습 목록으로</a></div>
   <footer>🌸 비지도(군집) 실습 가이드 · 4-2 인공지능 「기계학습」 · Orange3 · iris<br>위젯 입출력은 Orange3 저장소(biolab/orange3) 소스 기준</footer>
 </div>
 <button class="totop" id="totop" title="맨 위로">↑</button>
@@ -218,6 +246,25 @@
   (function(){var b=document.getElementById('totop');if(!b)return;
    window.addEventListener('scroll',function(){b.style.display=window.scrollY>400?'block':'none';});
    b.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});})();
+</script>
+<script>
+  (function(){
+    var SCRIPT_URL = "PASTE_WEBAPP_URL"; // ← 배포한 Apps Script 웹앱 URL(.../exec)로 교체
+    var f=document.getElementById('quizForm'); if(!f) return;
+    var s=document.getElementById('formStatus');
+    f.addEventListener('submit',function(ev){
+      ev.preventDefault();
+      if(!SCRIPT_URL || SCRIPT_URL==="PASTE_WEBAPP_URL"){ s.className='formstatus err'; s.textContent='⚠️ 아직 제출 주소가 설정되지 않았어요. 선생님께 알려주세요.'; return; }
+      if(!f.reportValidity()) return;
+      var btn=f.querySelector('.submitbtn');
+      var body=new URLSearchParams(new FormData(f));
+      function done(){ s.className='formstatus ok'; s.textContent='✅ 제출 완료! 수고했어요.'; btn.disabled=true; btn.textContent='제출됨'; }
+      var ok=false; try{ ok=navigator.sendBeacon(SCRIPT_URL, body); }catch(e){ ok=false; }
+      if(ok){ done(); }
+      else{ fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:body}).then(done)
+             .catch(function(){ s.className='formstatus err'; s.textContent='❌ 전송 실패 — 인터넷 확인 후 다시 시도해주세요.'; }); }
+    });
+  })();
 </script>
 </body>
 </html>

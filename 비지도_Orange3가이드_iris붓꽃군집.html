@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orange3로 붓꽃 끼리끼리 묶기 🌸 — 비지도(군집) 실습 가이드</title>
+<style>
+  :root{
+    --orange:#f57c00; --orange-d:#e65100;
+    --green:#2e7d32; --green-l:#e8f5e9; --blue:#1565c0; --blue-l:#e3f2fd;
+    --teal:#00897b; --teal-d:#00695c; --teal-l:#e0f2f1;
+    --purple:#6a1b9a; --purple-l:#f3e5f5; --red:#c62828; --red-l:#ffebee;
+    --ink:#2b2b2b; --muted:#6b6b6b; --line:#e6e0d8; --card:#fff; --bg:#f3f8f7;
+    --shadow:0 2px 10px rgba(0,0,0,.06); --shadow-h:0 8px 24px rgba(0,137,123,.18); --radius:16px;
+  }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:16px;
+    font-family:"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  .wrap{max-width:960px;margin:0 auto;padding:0 18px 80px}
+  .hero{background:linear-gradient(135deg,#26a69a,#00897b 55%,#00695c);color:#fff;
+    padding:42px 26px 34px;border-radius:0 0 28px 28px;box-shadow:0 6px 22px rgba(0,105,92,.28);position:relative;overflow:hidden}
+  .hero::after{content:"🌸🌼🌺";position:absolute;right:-4px;bottom:-12px;font-size:54px;opacity:.18;letter-spacing:8px;transform:rotate(-8deg)}
+  .hero h1{margin:0 0 6px;font-size:29px;line-height:1.25} .hero p{margin:0;font-size:16px;opacity:.95}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .badge{background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.4);padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600}
+  section{margin-top:30px}
+  h2{font-size:22px;margin:0 0 14px;display:flex;align-items:center;gap:10px}
+  h2 .num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;font-size:15px;font-weight:800;flex:none}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow)}
+  .callout{border-radius:14px;padding:14px 18px;margin:14px 0;border-left:6px solid;font-size:15px}
+  .c-goal{background:var(--teal-l);border-color:var(--teal)} .c-goal b{color:var(--teal-d)}
+  .c-tip{background:var(--green-l);border-color:var(--green)} .c-tip b{color:var(--green)}
+  .c-info{background:var(--blue-l);border-color:var(--blue)} .c-info b{color:var(--blue)}
+  .c-warn{background:var(--red-l);border-color:var(--red)} .c-warn b{color:var(--red)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .chip{background:#fff;border:1.5px solid var(--teal-l);color:var(--teal-d);border-radius:999px;padding:5px 13px;font-size:13.5px;font-weight:600}
+  .chip.label{background:#fff3e0;border-color:#ffcc80;color:var(--orange-d)}
+  table{width:100%;border-collapse:collapse;margin:8px 0;font-size:14.5px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)} th{background:var(--teal);color:#fff;font-weight:700} tr:last-child td{border-bottom:0}
+  td code,p code,li code{background:var(--teal-l);color:var(--teal-d);padding:2px 7px;border-radius:6px;font-size:13.5px;font-weight:700;border:1px solid #b2dfdb}
+  .cat{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12px;font-weight:700;color:#fff}
+  .cat.data{background:#5c6bc0} .cat.viz{background:#8e24aa} .cat.unsup{background:#00897b}
+  .conn{display:flex;align-items:center;gap:7px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:14px}
+  .conn .w{font-weight:800;padding:5px 11px;border-radius:8px;white-space:nowrap}
+  .conn .w.out{background:var(--teal);color:#fff} .conn .w.in{background:#fff;border:2px solid var(--teal);color:var(--teal-d)}
+  .conn .port{font-size:12px;font-weight:700;color:#fff;background:#90a4ae;border-radius:6px;padding:2px 8px;white-space:nowrap}
+  .conn .a{color:var(--teal);font-weight:900;font-size:20px}
+  .conn .note{font-size:12.5px;color:var(--muted);width:100%;margin-top:2px}
+  .flow{display:flex;flex-direction:column;gap:0;align-items:center;margin:10px 0}
+  .frow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center}
+  .wbox{background:#fff;border:2px solid var(--teal);color:var(--teal-d);border-radius:12px;padding:10px 14px;font-weight:700;font-size:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:2px;min-width:104px;text-align:center}
+  .wbox small{font-weight:600;color:var(--muted);font-size:11px}
+  .wbox.start{background:var(--teal);color:#fff} .wbox.start small{color:#b2dfdb}
+  .vbar{width:2px;height:18px;background:var(--teal)} .arrow{color:var(--teal);font-size:22px;font-weight:900}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px 18px 22px;margin:14px 0;box-shadow:var(--shadow);border-left:6px solid var(--teal);transition:transform .15s,box-shadow .15s}
+  .step:hover{transform:translateY(-2px);box-shadow:var(--shadow-h)}
+  .step .head{display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+  .step .sn{flex:none;width:34px;height:34px;border-radius:10px;background:var(--teal);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:16px}
+  .step .stitle{font-size:17px;font-weight:800;margin:0}
+  .step .wtag{font-size:12px;font-weight:700;background:var(--teal-l);color:var(--teal-d);border:1px solid #b2dfdb;border-radius:7px;padding:3px 9px}
+  .step ol,.step ul{margin:6px 0 0;padding-left:22px} .step li{margin:5px 0}
+  .step .why{font-size:13.5px;color:var(--muted);font-style:italic;margin-top:6px} .star{color:#f9a825}
+  .qbox{background:#fff;border:1px solid var(--line);border-left:6px solid var(--blue);border-radius:12px;padding:12px 16px;margin:10px 0;box-shadow:var(--shadow)}
+  .qbox .q{font-weight:700;color:var(--blue)} .qbox .ln{border:none;border-top:1px dashed #bbdefb;margin:10px 0 4px}
+  .check{list-style:none;padding:0;margin:6px 0}
+  .check li{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:8px 0;display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+  .check li:hover{background:var(--teal-l)} .check input{margin-top:4px;width:18px;height:18px;accent-color:var(--teal);flex:none}
+  .check input:checked + span{text-decoration:line-through;color:var(--muted)}
+  details{background:#fff;border:1px solid var(--line);border-radius:12px;margin:10px 0;overflow:hidden;box-shadow:var(--shadow)}
+  summary{cursor:pointer;padding:14px 18px;font-weight:700;background:var(--purple-l);color:var(--purple);list-style:none;display:flex;align-items:center;gap:8px}
+  summary::-webkit-details-marker{display:none} summary::after{content:"▼";margin-left:auto;font-size:11px;transition:transform .2s}
+  details[open] summary::after{transform:rotate(180deg)}
+  .tbody{padding:6px 18px 14px} .tbody dt{font-weight:700;color:var(--red);margin-top:10px} .tbody dd{margin:3px 0 0}
+  footer{margin-top:40px;text-align:center;color:var(--muted);font-size:13px}
+  .totop{position:fixed;right:18px;bottom:18px;background:var(--teal);color:#fff;border:none;width:48px;height:48px;border-radius:50%;font-size:20px;cursor:pointer;box-shadow:var(--shadow-h);display:none}
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>🌸 Orange3로 붓꽃 끼리끼리 묶기</h1>
+  <p>품종을 안 알려줘도 AI가 <b>닮은 꽃끼리</b> 묶는 걸 보고, 실제 품종과 비교한다 — 비지도(군집) · k-평균</p>
+  <div class="badges">
+    <span class="badge">🍊 도구: Orange3</span>
+    <span class="badge">📦 데이터: iris (내장)</span>
+    <span class="badge">🧩 Datasets 위젯</span>
+    <span class="badge">⏱️ 약 50분</span>
+    <span class="badge">⌨️ 코딩 0줄</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="callout c-goal">🎯 <b>오늘의 목표</b> — 붓꽃의 <b>꽃잎·꽃받침 크기</b>만 보고, 품종(정답)을 안 알려줘도 AI가 <b>비슷한 꽃끼리 묶는</b> 걸 확인하고, 그 묶음이 <b>실제 품종과 얼마나 맞는지</b> 비교한다.</div>
+
+  <!-- 1 데이터 -->
+  <section>
+    <h2><span class="num">1</span> 어떤 데이터를 쓰나요? 🌸</h2>
+    <div class="card">
+      <p><b>iris(붓꽃)</b> — 머신러닝에서 가장 유명한 연습 데이터예요. 붓꽃 <b>150송이</b>, 각 꽃마다 크기 4가지가 적혀 있어요.</p>
+      <p style="margin:12px 0 4px;font-weight:700;color:var(--teal-d)">크기 특징 4가지 (입력)</p>
+      <div class="chips"><span class="chip">꽃받침 길이 sepal length</span><span class="chip">꽃받침 너비 sepal width</span><span class="chip">🌟 꽃잎 길이 petal length</span><span class="chip">🌟 꽃잎 너비 petal width</span></div>
+      <p style="margin:12px 0 4px;font-weight:700;color:var(--orange-d)">실제 품종 (있긴 하지만 오늘은 <u>숨기고</u> 시작!)</p>
+      <div class="chips"><span class="chip label">setosa</span><span class="chip label">versicolor</span><span class="chip label">virginica</span></div>
+      <div class="callout c-info" style="margin-bottom:0">👉 오늘은 품종을 <b>안 보고</b> 크기만으로 묶어요(= <b>비지도학습·군집</b>). 다 묶은 뒤에 “실제 품종과 맞나?”를 확인하는 게 핵심 재미!</div>
+      <div class="callout c-warn" style="margin-bottom:0">🟢 <b>File 위젯 말고 <code>Datasets</code> 위젯!</b> · <code>File</code>=내 컴퓨터 파일 / <code>Datasets</code>=Orange 제공 예제(오늘 사용)</div>
+    </div>
+  </section>
+
+  <!-- 2 Datasets -->
+  <section>
+    <h2><span class="num">2</span> <code>Datasets</code> 위젯으로 불러오기 📥</h2>
+    <div class="card">
+      <ol>
+        <li>왼쪽 <span class="cat data">Data</span> 칸에서 <code>Datasets</code> 위젯을 캔버스에 놓기. <b>(File 아님!)</b></li>
+        <li>더블클릭 → 예제 목록(인터넷 필요) → 검색창에 <code>iris</code> 입력.</li>
+        <li><b>iris</b> 줄을 더블클릭 → 자동 다운로드(구름→체크).</li>
+        <li>아래에 <b>150 instances</b>가 보이면 성공! 이제 <code>Data</code>로 내보낼 준비 완료.</li>
+      </ol>
+      <div class="callout c-info" style="margin-bottom:0">🌐 처음 받을 때만 인터넷 필요(서버: datasets.biolab.si). iris는 자주 쓰여 캐시에 남아요.</div>
+    </div>
+  </section>
+
+  <!-- 3 완성 모양 + 연결 -->
+  <section>
+    <h2><span class="num">3</span> 완성할 모양 &amp; 연결 정리 🗺️</h2>
+    <div class="card">
+      <div class="flow">
+        <div class="wbox start">Datasets<small>iris</small></div>
+        <div class="vbar"></div>
+        <div class="frow">
+          <div class="wbox">Data Table<small>표 확인</small></div>
+          <div class="wbox">Scatter Plot<small>묶기 전</small></div>
+          <div class="wbox">k-Means<small>군집</small></div>
+        </div>
+        <div class="frow" style="margin-top:6px"><div style="min-width:104px"></div><div style="min-width:104px"></div><div class="arrow">↓</div></div>
+        <div class="frow"><div style="min-width:104px"></div><div style="min-width:104px"></div><div class="wbox">Scatter Plot (1)<small>묶은 후·색칠</small></div></div>
+      </div>
+      <p style="font-weight:700;color:var(--teal-d);margin:14px 0 4px">📌 연결 4개 — 정확한 방향 (출력 ▸ ──▶ ▸ 입력)</p>
+      <div class="conn"><span class="w out">Datasets</span><span class="port">Data ▸</span><span class="a">──▶</span><span class="port">▸ Data</span><span class="w in">Data Table</span></div>
+      <div class="conn"><span class="w out">Datasets</span><span class="port">Data ▸</span><span class="a">──▶</span><span class="port">▸ Data</span><span class="w in">Scatter Plot</span></div>
+      <div class="conn"><span class="w out">Datasets</span><span class="port">Data ▸</span><span class="a">──▶</span><span class="port">▸ Data</span><span class="w in">k-Means</span></div>
+      <div class="conn"><span class="w out">k-Means</span><span class="port">Data ▸</span><span class="a">──▶</span><span class="port">▸ Data</span><span class="w in">Scatter Plot (1)</span><span class="note">⬅ Datasets가 아니라 <b>k-Means</b>에서! (군집 색을 입히려고)</span></div>
+    </div>
+  </section>
+
+  <!-- 4 단계별 -->
+  <section>
+    <h2><span class="num">4</span> 단계별 따라하기 👣</h2>
+
+    <div class="step">
+      <div class="head"><span class="sn">1</span><p class="stitle">데이터 표로 확인</p><span class="wtag">Data Table · Data</span></div>
+      <div class="conn"><span class="w out">Datasets</span><span class="port">Data ▸</span><span class="a">──▶</span><span class="port">▸ Data</span><span class="w in">Data Table</span></div>
+      <ol><li><code>Data Table</code>을 놓고 연결 → 더블클릭.</li><li>꽃 150송이의 크기 4가지를 확인. (품종 열 <code>iris</code>도 보이지만, 군집엔 안 써요!)</li></ol>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="sn">2</span><p class="stitle">묶기 전 점 보기</p><span class="wtag">Scatter Plot · Visualize</span></div>
+      <div class="conn"><span class="w out">Datasets</span><span class="port">Data ▸</span><span class="a">──▶</span><span class="port">▸ Data</span><span class="w in">Scatter Plot</span></div>
+      <ol><li><code>Scatter Plot</code>을 놓고 <code>Datasets</code>와 연결 → 더블클릭.</li>
+      <li><b>Axis x: petal length</b>, <b>Axis y: petal width</b> (꽃잎 길이·너비가 품종을 가장 잘 가름!).</li>
+      <li>점들이 흩어져 보여요. (Color는 아직 <b>끄거나 같은 색</b>으로 두기)</li></ol>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="sn">3</span><p class="stitle">군집 만들기</p><span class="wtag">k-Means · Unsupervised</span></div>
+      <div class="conn"><span class="w out">Datasets</span><span class="port">Data ▸</span><span class="a">──▶</span><span class="port">▸ Data</span><span class="w in">k-Means</span></div>
+      <ol><li><code>k-Means</code>를 놓고 <code>Datasets</code>와 연결. <i>(왼쪽 <span class="cat unsup">Unsupervised</span> 칸)</i></li>
+      <li>더블클릭 → <b>Number of Clusters: 3</b> (Fixed에 3). <b>Re-runs</b>는 그대로 두면 여러 번 시도해 더 좋은 군집을 찾아줘요.</li>
+      <li>데이터에 <b>‘Cluster’ 정보</b>가 붙어 출력돼요.</li></ol>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="sn">4</span><p class="stitle">묶은 결과 색으로 보기</p><span class="wtag">Scatter Plot (1) · Visualize</span></div>
+      <div class="conn"><span class="w out">k-Means</span><span class="port">Data ▸</span><span class="a">──▶</span><span class="port">▸ Data</span><span class="w in">Scatter Plot (1)</span><span class="note">⬅ 이번엔 <b>k-Means</b>에서 연결!</span></div>
+      <ol><li><b>새</b> <code>Scatter Plot</code>을 놓고 <b><code>k-Means</code>와 연결</b>.</li>
+      <li>더블클릭 → x: <b>petal length</b>, y: <b>petal width</b>, <b>Color: Cluster</b>.</li>
+      <li>🎉 꽃들이 <b>세 가지 색</b>으로 묶였어요!</li></ol>
+    </div>
+
+    <div class="step" style="border-left-color:var(--orange)">
+      <div class="head"><span class="sn" style="background:var(--orange)">5</span><p class="stitle">🌟 정답과 맞춰보기 (오늘의 하이라이트!)</p><span class="wtag">같은 Scatter Plot (1)</span></div>
+      <ol><li>방금 그 <code>Scatter Plot (1)</code>에서 <b>Color를 <code>Cluster</code> → <code>iris</code>(실제 품종)</b>로 바꿔보세요.</li>
+      <li>AI가 묶은 색(Cluster)과 실제 품종 색이 <b>거의 똑같이 겹치죠?</b></li></ol>
+      <p class="why"><span class="star">🌟</span> 정답을 한 번도 안 알려줬는데, AI가 묶은 무리가 <b>실제 붓꽃 품종과 거의 일치</b>해요! 이게 비지도학습의 놀라운 점이에요.</p>
+    </div>
+  </section>
+
+  <!-- 5 결론 질문 -->
+  <section>
+    <h2><span class="num">5</span> 실습 결론 질문 🧐 <span style="font-size:13px;color:var(--muted);font-weight:600">(실습 끝나고 답해보기)</span></h2>
+    <div class="card">
+      <div class="qbox"><span class="q">Q1.</span> 품종(정답)을 안 알려줬는데도 꽃들이 <b>몇 무리</b>로 묶였나요?<hr class="ln"><span style="color:var(--muted);font-size:13px">✏️ 적어보기</span></div>
+      <div class="qbox"><span class="q">Q2.</span> Color를 <code>iris</code>(실제 품종)로 바꿨을 때, AI의 군집과 <b>얼마나 일치</b>했나요? 어떤 품종이 가장 <b>확실히 따로</b> 묶였나요?<hr class="ln"><span style="color:var(--muted);font-size:13px">✏️ 적어보기</span></div>
+      <div class="qbox"><span class="q">Q3.</span> <b>100% 완벽히</b> 일치하진 않았다면, 어떤 두 품종이 서로 닮아 경계에서 헷갈렸을까요?<hr class="ln"><span style="color:var(--muted);font-size:13px">✏️ 적어보기</span></div>
+      <div class="qbox"><span class="q">Q4.</span> 이 실습으로 알게 된 <b>비지도(군집)의 핵심</b>을 한 문장으로 정리하면?<hr class="ln"><span style="color:var(--muted);font-size:13px">✏️ 적어보기</span></div>
+    </div>
+  </section>
+
+  <!-- 6 교사용 -->
+  <section>
+    <h2><span class="num">6</span> 자주 나오는 문제 (교사용) 🛟</h2>
+    <details>
+      <summary>🟢 펼쳐서 보기 — 잘 안 될 때 점검</summary>
+      <div class="tbody"><dl>
+        <dt>Datasets 목록이 안 떠요</dt><dd>인터넷 연결 확인. 검색창에 <code>iris</code>.</dd>
+        <dt>k-Means가 안 보여요</dt><dd>왼쪽 <span class="cat unsup">Unsupervised</span> 칸 확인.</dd>
+        <dt>색이 안 바뀌어요</dt><dd>두 번째 Scatter Plot을 <b>k-Means</b>(Datasets 아님)에 연결, <b>Color=Cluster</b>인지 확인.</dd>
+        <dt>군집이 품종과 많이 어긋나요</dt><dd>k-Means의 <b>Number of Clusters=3</b>인지, x·y를 <b>petal length·petal width</b>로 했는지 확인(꽃잎이 품종을 가장 잘 가름).</dd>
+        <dt>연결이 엉뚱하게 붙어요</dt><dd>연결선 더블클릭 → <code>Data → Data</code>로 맞추기.</dd>
+      </dl></div>
+    </details>
+    <div class="callout c-info">📌 <b>분류와 비교</b>: 분류(동물 zoo)는 정답을 보고 배웠지만, 오늘은 <b>정답 없이</b> 묶었어요. 그런데도 실제 품종을 거의 찾아낸 게 비지도의 힘!</div>
+  </section>
+
+  <footer>🌸 비지도(군집) 실습 가이드 · 4-2 인공지능 「기계학습」 · Orange3 · iris<br>위젯 입출력은 Orange3 저장소(biolab/orange3) 소스 기준</footer>
+</div>
+<button class="totop" id="totop" title="맨 위로">↑</button>
+<script>
+  (function(){var b=document.getElementById('totop');if(!b)return;
+   window.addEventListener('scroll',function(){b.style.display=window.scrollY>400?'block':'none';});
+   b.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});})();
+</script>
+</body>
+</html>

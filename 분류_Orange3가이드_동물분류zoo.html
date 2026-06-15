@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orange3로 동물 분류 AI 만들기 🐯 — 분류(지도) 실습 가이드</title>
+<style>
+  :root{
+    --orange:#f57c00; --orange-d:#e65100; --orange-l:#ffe0b2; --orange-bg:#fff8f0;
+    --green:#2e7d32; --green-l:#e8f5e9; --blue:#1565c0; --blue-l:#e3f2fd;
+    --purple:#6a1b9a; --purple-l:#f3e5f5; --red:#c62828; --red-l:#ffebee;
+    --ink:#2b2b2b; --muted:#6b6b6b; --line:#e6e0d8; --card:#fff; --bg:#faf6f1;
+    --shadow:0 2px 10px rgba(0,0,0,.06); --shadow-h:0 8px 24px rgba(245,124,0,.18); --radius:16px;
+  }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:16px;
+    font-family:"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  .wrap{max-width:960px;margin:0 auto;padding:0 18px 80px}
+  .hero{background:linear-gradient(135deg,#ff9800,#f57c00 55%,#e65100);color:#fff;
+    padding:42px 26px 34px;border-radius:0 0 28px 28px;box-shadow:0 6px 22px rgba(230,81,0,.28);position:relative;overflow:hidden}
+  .hero::after{content:"🐯🐦🐟🦎🐝";position:absolute;right:-6px;bottom:-14px;font-size:54px;opacity:.18;letter-spacing:6px;transform:rotate(-8deg)}
+  .hero h1{margin:0 0 6px;font-size:29px;line-height:1.25} .hero p{margin:0;font-size:16px;opacity:.95}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .badge{background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.4);padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600}
+  section{margin-top:30px}
+  h2{font-size:22px;margin:0 0 14px;display:flex;align-items:center;gap:10px}
+  h2 .num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--orange);color:#fff;font-size:15px;font-weight:800;flex:none}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow)}
+  .callout{border-radius:14px;padding:14px 18px;margin:14px 0;border-left:6px solid;font-size:15px}
+  .c-goal{background:var(--orange-bg);border-color:var(--orange)} .c-goal b{color:var(--orange-d)}
+  .c-tip{background:var(--green-l);border-color:var(--green)} .c-tip b{color:var(--green)}
+  .c-info{background:var(--blue-l);border-color:var(--blue)} .c-info b{color:var(--blue)}
+  .c-warn{background:var(--red-l);border-color:var(--red)} .c-warn b{color:var(--red)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .chip{background:#fff;border:1.5px solid var(--orange-l);color:var(--orange-d);border-radius:999px;padding:5px 13px;font-size:13.5px;font-weight:600}
+  .chip.label{background:var(--green-l);border-color:#a5d6a7;color:var(--green)}
+  table{width:100%;border-collapse:collapse;margin:8px 0;font-size:14.5px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)} th{background:var(--orange);color:#fff;font-weight:700} tr:last-child td{border-bottom:0}
+  td code,p code,li code{background:#fff3e0;color:var(--orange-d);padding:2px 7px;border-radius:6px;font-size:13.5px;font-weight:700;border:1px solid var(--orange-l)}
+  .cat{display:inline-block;padding:2px 9px;border-radius:6px;font-size:12px;font-weight:700;color:#fff}
+  .cat.data{background:#5c6bc0} .cat.model{background:#43a047} .cat.eval{background:#fb8c00} .cat.viz{background:#8e24aa}
+  /* connection chips */
+  .conn{display:flex;align-items:center;gap:7px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:14px}
+  .conn .w{font-weight:800;padding:5px 11px;border-radius:8px;white-space:nowrap}
+  .conn .w.out{background:var(--orange);color:#fff} .conn .w.in{background:#fff;border:2px solid var(--orange);color:var(--orange-d)}
+  .conn .port{font-size:12px;font-weight:700;color:#fff;background:#90a4ae;border-radius:6px;padding:2px 8px;white-space:nowrap}
+  .conn .port.learner{background:#43a047} .conn .port.tree{background:#8e24aa} .conn .port.eval{background:#fb8c00}
+  .conn .a{color:var(--orange);font-weight:900;font-size:20px}
+  .conn .note{font-size:12.5px;color:var(--muted);width:100%;margin-top:2px}
+  /* ui map */
+  .ui-map{display:grid;grid-template-columns:200px 1fr;border:2px solid var(--orange);border-radius:12px;overflow:hidden;margin:6px 0 16px;background:#fff}
+  .ui-side{background:linear-gradient(180deg,#fff3e0,#ffe0b2);padding:14px;font-size:13px;border-right:2px solid var(--orange)}
+  .ui-side .t{font-weight:800;color:var(--orange-d);margin-bottom:8px} .ui-side ul{margin:0;padding-left:16px} .ui-side li{margin:4px 0}
+  .ui-canvas{padding:16px;display:flex;align-items:center;justify-content:center;color:var(--muted);text-align:center;font-size:14px;min-height:130px;background:repeating-linear-gradient(45deg,#fafafa,#fafafa 12px,#f3f3f3 12px,#f3f3f3 24px)}
+  .ui-canvas .demo{background:#fff;border:1px dashed var(--orange);border-radius:10px;padding:14px 18px}
+  @media(max-width:620px){.ui-map{grid-template-columns:1fr}.ui-side{border-right:0;border-bottom:2px solid var(--orange)}}
+  /* steps */
+  .step{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px 18px 22px;margin:14px 0;box-shadow:var(--shadow);border-left:6px solid var(--orange);transition:transform .15s,box-shadow .15s}
+  .step:hover{transform:translateY(-2px);box-shadow:var(--shadow-h)}
+  .step .head{display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+  .step .sn{flex:none;width:34px;height:34px;border-radius:10px;background:var(--orange);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:16px}
+  .step .stitle{font-size:17px;font-weight:800;margin:0}
+  .step .wtag{font-size:12px;font-weight:700;background:#fff3e0;color:var(--orange-d);border:1px solid var(--orange-l);border-radius:7px;padding:3px 9px}
+  .step ol,.step ul{margin:6px 0 0;padding-left:22px} .step li{margin:5px 0}
+  .step .why{font-size:13.5px;color:var(--muted);font-style:italic;margin-top:6px} .star{color:#f9a825}
+  .qbox{background:#fff;border:1px solid var(--line);border-left:6px solid var(--blue);border-radius:12px;padding:12px 16px;margin:10px 0;box-shadow:var(--shadow)}
+  .qbox .q{font-weight:700;color:var(--blue)} .qbox .ln{border:none;border-top:1px dashed #c5cae9;margin:10px 0 4px}
+  .check{list-style:none;padding:0;margin:6px 0}
+  .check li{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:8px 0;display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+  .check li:hover{background:var(--orange-bg)} .check input{margin-top:4px;width:18px;height:18px;accent-color:var(--orange);flex:none}
+  .check input:checked + span{text-decoration:line-through;color:var(--muted)}
+  details{background:#fff;border:1px solid var(--line);border-radius:12px;margin:10px 0;overflow:hidden;box-shadow:var(--shadow)}
+  summary{cursor:pointer;padding:14px 18px;font-weight:700;background:var(--purple-l);color:var(--purple);list-style:none;display:flex;align-items:center;gap:8px}
+  summary::-webkit-details-marker{display:none} summary::after{content:"▼";margin-left:auto;font-size:11px;transition:transform .2s}
+  details[open] summary::after{transform:rotate(180deg)}
+  .tbody{padding:6px 18px 14px} .tbody dt{font-weight:700;color:var(--red);margin-top:10px} .tbody dd{margin:3px 0 0}
+  footer{margin-top:40px;text-align:center;color:var(--muted);font-size:13px}
+  .totop{position:fixed;right:18px;bottom:18px;background:var(--orange);color:#fff;border:none;width:48px;height:48px;border-radius:50%;font-size:20px;cursor:pointer;box-shadow:var(--shadow-h);display:none}
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>🐯 Orange3로 동물 분류 AI 만들기</h1>
+  <p>특징을 보고 <b>동물 종류를 맞히는 AI</b>를 코딩 0줄로 — 분류(지도학습) 실습</p>
+  <div class="badges">
+    <span class="badge">🍊 도구: Orange3</span>
+    <span class="badge">📦 데이터: zoo</span>
+    <span class="badge">🧩 Datasets 위젯으로 불러옴</span>
+    <span class="badge">⏱️ 약 50분</span>
+    <span class="badge">⌨️ 코딩 0줄</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="callout c-goal">🎯 <b>오늘의 목표</b> — 동물의 특징(젖을 먹이나? 깃털이 있나?…)을 보고 <b>동물 종류(포유류·새·물고기…)</b>를 맞히는 AI를 만들고, 그 AI의 <b>정확도</b>와 <b>판단 규칙</b>을 직접 확인한다.</div>
+
+  <!-- 1 데이터 + File vs Datasets -->
+  <section>
+    <h2><span class="num">1</span> zoo 데이터가 뭐예요? 🐾</h2>
+    <div class="card">
+      <p><b>동물 101마리</b>가 한 줄씩 들어 있고, 각 동물마다 <b>16가지 특징</b>과 맨 끝에 <b>정답(종류)</b>이 붙어 있어요.</p>
+      <p style="margin:12px 0 4px;font-weight:700;color:var(--orange-d)">📋 16가지 특징 (대부분 예/아니오)</p>
+      <div class="chips">
+        <span class="chip">털 hair</span><span class="chip">깃털 feathers</span><span class="chip">알 eggs</span><span class="chip">젖 milk</span>
+        <span class="chip">날기 airborne</span><span class="chip">물속 aquatic</span><span class="chip">사냥 predator</span><span class="chip">이빨 toothed</span>
+        <span class="chip">등뼈 backbone</span><span class="chip">숨쉬기 breathes</span><span class="chip">독 venomous</span><span class="chip">지느러미 fins</span>
+        <span class="chip">다리 수 legs</span><span class="chip">꼬리 tail</span><span class="chip">애완 domestic</span><span class="chip">고양이크기 catsize</span>
+      </div>
+      <p style="margin:12px 0 4px;font-weight:700;color:var(--green)">✅ 정답 라벨 = <code>type</code> (7종)</p>
+      <div class="chips">
+        <span class="chip label">포유류 mammal</span><span class="chip label">새 bird</span><span class="chip label">물고기 fish</span><span class="chip label">양서류 amphibian</span>
+        <span class="chip label">파충류 reptile</span><span class="chip label">곤충 insect</span><span class="chip label">무척추 invertebrate</span>
+      </div>
+      <div class="callout c-warn" style="margin-bottom:0">
+        🟠 <b>중요 — File 위젯 말고 <code>Datasets</code> 위젯!</b><br>
+        · <code>File</code> = <b>내 컴퓨터</b>에 있는 파일(csv 등)을 여는 위젯<br>
+        · <code>Datasets</code> = <b>Orange가 제공</b>하는 예제 데이터 목록(설명 포함)을 내려받는 위젯 ← <b>오늘 사용</b>
+      </div>
+      <div class="callout c-info" style="margin-bottom:0">👉 정답(type)이 <b>있으니까 = 지도학습(분류)</b>! 정답 없이 묶기만 했던 군집(비지도)과 정반대예요.</div>
+    </div>
+  </section>
+
+  <!-- 2 Datasets 위젯 -->
+  <section>
+    <h2><span class="num">2</span> <code>Datasets</code> 위젯으로 불러오기 📥</h2>
+    <div class="card">
+      <ol>
+        <li>왼쪽 <span class="cat data">Data</span> 칸에서 <code>Datasets</code> 위젯을 캔버스에 놓아요. <b>(File 아님!)</b></li>
+        <li>더블클릭 → 예제 데이터 목록이 표로 떠요(인터넷 필요) → 검색창에 <code>zoo</code> 입력.</li>
+        <li><b>zoo</b> 줄을 더블클릭 → 처음이면 자동 다운로드(구름→체크).</li>
+        <li>아래에 <b>101 instances</b>, <b>target: type</b> 이 보이면 성공 🎉 이제 <code>Data</code>로 내보낼 준비 완료.</li>
+      </ol>
+      <div class="callout c-info" style="margin-bottom:0">🌐 처음 받을 때만 인터넷이 필요하고, 이후엔 캐시를 써요. (서버: datasets.biolab.si)</div>
+    </div>
+  </section>
+
+  <!-- 3 화면/연결 -->
+  <section>
+    <h2><span class="num">3</span> 화면 둘러보기 &amp; 연결 방법 🖥️🔗</h2>
+    <div class="card">
+      <div class="ui-map">
+        <div class="ui-side"><div class="t">◀ 왼쪽: 위젯 목록</div>
+          <ul><li>📁 <b>Data</b> — 데이터</li><li>📊 <b>Visualize</b> — 그래프</li><li>🧠 <b>Model</b> — 학습기</li><li>📏 <b>Evaluate</b> — 평가</li></ul>
+        </div>
+        <div class="ui-canvas"><div class="demo">🟠 가운데 = <b>작업 공간(캔버스)</b><br><small>위젯을 놓고 선으로 연결해요</small></div></div>
+      </div>
+      <table>
+        <tr><th>이렇게 하면</th><th>이런 일이</th></tr>
+        <tr><td>위젯 <b>오른쪽 반원(점)</b>에서 시작해 다른 위젯으로 <b>드래그</b></td><td>두 위젯이 <b>선으로 연결</b>돼요 (출력→입력)</td></tr>
+        <tr><td>연결선을 <b>더블클릭</b></td><td>어느 <b>출력→입력</b> 채널을 이을지 고르는 창</td></tr>
+        <tr><td>선 클릭 후 <b>Delete</b></td><td>연결이 끊겨요</td></tr>
+      </table>
+      <div class="callout c-tip" style="margin-bottom:0">💡 아래 단계마다 <b>어느 출력 점에서 어느 입력 점으로</b> 잇는지 칩으로 정확히 표시했어요. 색이 다른 칩(<span style="color:#43a047;font-weight:700">Learner</span>·<span style="color:#8e24aa;font-weight:700">Tree</span>·<span style="color:#fb8c00;font-weight:700">Evaluation Results</span>)은 <code>Data</code>가 아닌 특별한 채널이에요.</div>
+    </div>
+  </section>
+
+  <!-- 4 완성 모양 + 연결 정리 -->
+  <section>
+    <h2><span class="num">4</span> 완성할 모양 &amp; 연결 정리 🗺️</h2>
+    <div class="card">
+      <p style="font-weight:700;color:var(--orange-d);margin-top:0">📌 연결 8개 — 정확한 방향 (출력 ▸ ──▶ ▸ 입력)</p>
+      <div class="conn"><span class="w out">Datasets</span><span class="port">Data ▸</span><span class="a">──▶</span><span class="port">▸ Data</span><span class="w in">Data Table</span></div>
+      <div class="conn"><span class="w out">Datasets</span><span class="port">Data ▸</span><span class="a">──▶</span><span class="port">▸ Data</span><span class="w in">Tree</span></div>
+      <div class="conn"><span class="w out">Tree</span><span class="port tree">Model ▸</span><span class="a">──▶</span><span class="port tree">▸ Tree</span><span class="w in">Tree Viewer</span><span class="note">⬅ Tree의 <b>Model</b> 출력이 Tree Viewer의 <b>Tree</b> 입력으로 연결돼요 (자동)</span></div>
+      <div class="conn"><span class="w out">Datasets</span><span class="port">Data ▸</span><span class="a">──▶</span><span class="port">▸ Data</span><span class="w in">Test and Score</span></div>
+      <div class="conn"><span class="w out">Tree</span><span class="port learner">Learner ▸</span><span class="a">──▶</span><span class="port learner">▸ Learner</span><span class="w in">Test and Score</span><span class="note">⬅ <b>핵심!</b> 학습기는 <code>Data</code>가 아니라 <b><code>Learner</code></b> 선으로 연결돼요.</span></div>
+      <div class="conn"><span class="w out">kNN</span><span class="port learner">Learner ▸</span><span class="a">──▶</span><span class="port learner">▸ Learner</span><span class="w in">Test and Score</span></div>
+      <div class="conn"><span class="w out">Naive Bayes</span><span class="port learner">Learner ▸</span><span class="a">──▶</span><span class="port learner">▸ Learner</span><span class="w in">Test and Score</span></div>
+      <div class="conn"><span class="w out">Test and Score</span><span class="port eval">Evaluation Results ▸</span><span class="a">──▶</span><span class="port eval">▸ Evaluation Results</span><span class="w in">Confusion Matrix</span></div>
+      <div class="callout c-warn" style="margin-bottom:0">🟠 연결이 엉뚱한 채널로 붙으면 <b>연결선을 더블클릭</b>해서 위 표대로 맞추세요. (특히 학습기→Test and Score는 <code>Learner→Learner</code>!)</div>
+    </div>
+  </section>
+
+  <!-- 5 단계별 -->
+  <section>
+    <h2><span class="num">5</span> 단계별 따라하기 👣</h2>
+
+    <div class="step">
+      <div class="head"><span class="sn">1</span><p class="stitle">데이터 표로 확인</p><span class="wtag">Data Table · Data</span></div>
+      <div class="conn"><span class="w out">Datasets</span><span class="port">Data ▸</span><span class="a">──▶</span><span class="port">▸ Data</span><span class="w in">Data Table</span></div>
+      <ol><li><code>Data Table</code>을 놓고 연결 → 더블클릭.</li><li>16가지 특징과 맨 끝 <code>type</code>(정답)을 눈으로 확인.</li></ol>
+      <p class="why">예: <code>milk=1, hair=1</code> 인 동물은 type이 mammal(포유류)이죠?</p>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="sn">2</span><p class="stitle">분류 AI 학습</p><span class="wtag">Tree · Model</span></div>
+      <div class="conn"><span class="w out">Datasets</span><span class="port">Data ▸</span><span class="a">──▶</span><span class="port">▸ Data</span><span class="w in">Tree</span></div>
+      <ol><li><code>Tree</code> 위젯을 놓고 <code>Datasets</code>와 연결. <i>(왼쪽 <span class="cat model">Model</span> 칸)</i></li><li>특징을 보고 “이러면 포유류, 저러면 새” 규칙을 스스로 배워요.</li></ol>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="sn">3</span><p class="stitle">판단 규칙 눈으로 보기</p><span class="wtag">Tree Viewer · Visualize</span></div>
+      <div class="conn"><span class="w out">Tree</span><span class="port tree">Model ▸</span><span class="a">──▶</span><span class="port tree">▸ Tree</span><span class="w in">Tree Viewer</span></div>
+      <ol><li><code>Tree Viewer</code>를 놓고 <b><code>Tree</code>와 연결</b> → 더블클릭.</li><li>나뭇가지처럼 펼쳐진 <b>판단 규칙</b>이 보여요.</li></ol>
+      <p class="why"><span class="star">🌟</span> 예: “젖을 먹이나요(milk)? → 예 → 포유류”. AI가 어떻게 결정하는지 사람도 이해할 수 있어요!</p>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="sn">4</span><p class="stitle">정확도 재기</p><span class="wtag">Test and Score · Evaluate</span></div>
+      <div class="conn"><span class="w out">Datasets</span><span class="port">Data ▸</span><span class="a">──▶</span><span class="port">▸ Data</span><span class="w in">Test and Score</span></div>
+      <div class="conn"><span class="w out">Tree</span><span class="port learner">Learner ▸</span><span class="a">──▶</span><span class="port learner">▸ Learner</span><span class="w in">Test and Score</span></div>
+      <ol><li><code>Test and Score</code>를 놓고 <b>두 줄</b>을 위처럼 연결. <i>(<span class="cat eval">Evaluate</span> 칸)</i></li><li>더블클릭 → <b>Cross validation</b> 선택 → <b>CA(정확도)</b> 확인. (보통 90%↑)</li></ol>
+      <p class="why">Cross validation = 데이터를 나눠 번갈아 시험 보는 공정한 채점법.</p>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="sn">5</span><p class="stitle">모델 비교하기 🆚</p><span class="wtag">kNN · Naive Bayes · Model</span></div>
+      <div class="conn"><span class="w out">kNN</span><span class="port learner">Learner ▸</span><span class="a">──▶</span><span class="port learner">▸ Learner</span><span class="w in">Test and Score</span></div>
+      <div class="conn"><span class="w out">Naive Bayes</span><span class="port learner">Learner ▸</span><span class="a">──▶</span><span class="port learner">▸ Learner</span><span class="w in">Test and Score</span></div>
+      <ol><li><code>kNN</code>·<code>Naive Bayes</code>를 추가로 놓고 <b>둘 다 Test and Score에 Learner로</b> 연결.</li><li>표에 세 모델의 <b>CA</b>가 나란히 → 누가 제일 잘 맞히나 비교!</li></ol>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="sn">6</span><p class="stitle">헷갈린 동물 찾기</p><span class="wtag">Confusion Matrix · Evaluate</span></div>
+      <div class="conn"><span class="w out">Test and Score</span><span class="port eval">Evaluation Results ▸</span><span class="a">──▶</span><span class="port eval">▸ Evaluation Results</span><span class="w in">Confusion Matrix</span></div>
+      <ol><li><code>Confusion Matrix</code>를 놓고 <b>Test and Score와 연결</b> → 더블클릭.</li><li>어떤 종류를 <b>헷갈렸는지</b> 표로 확인. (대각선=정답, 나머지=실수)</li></ol>
+    </div>
+  </section>
+
+  <!-- 6 결론 질문 -->
+  <section>
+    <h2><span class="num">6</span> 실습 결론 질문 🧐 <span style="font-size:13px;color:var(--muted);font-weight:600">(실습 끝나고 답해보기)</span></h2>
+    <div class="card">
+      <div class="qbox"><span class="q">Q1.</span> <code>Tree Viewer</code>에서 AI가 <b>가장 먼저 던지는 질문(가장 결정적인 특징)</b>은 무엇이었나요? 그게 왜 중요한 단서일까요?<hr class="ln"><span style="color:var(--muted);font-size:13px">✏️ 적어보기</span></div>
+      <div class="qbox"><span class="q">Q2.</span> 세 모델(<code>Tree</code>·<code>kNN</code>·<code>Naive Bayes</code>) 중 정확도(CA)가 가장 높은 것은? zoo 데이터의 정확도가 높게 나오는 이유는 무엇일까요?<hr class="ln"><span style="color:var(--muted);font-size:13px">✏️ 적어보기</span></div>
+      <div class="qbox"><span class="q">Q3.</span> <code>Confusion Matrix</code>에서 AI가 <b>서로 헷갈린 동물 종류</b>가 있었나요? 왜 그 종류를 헷갈렸을지 추측해보세요.<hr class="ln"><span style="color:var(--muted);font-size:13px">✏️ 적어보기</span></div>
+      <div class="qbox"><span class="q">Q4.</span> 이 실습으로 알게 된 <b>‘분류(지도학습)’의 핵심</b>을 한 문장으로 정리하면?<hr class="ln"><span style="color:var(--muted);font-size:13px">✏️ 적어보기</span></div>
+    </div>
+  </section>
+
+  <!-- 7 교사용 -->
+  <section>
+    <h2><span class="num">7</span> 자주 나오는 문제 (교사용) 🛟</h2>
+    <details>
+      <summary>🟠 펼쳐서 보기 — 잘 안 될 때 점검</summary>
+      <div class="tbody"><dl>
+        <dt>Datasets 목록이 안 떠요</dt><dd>인터넷 연결 확인(처음 받을 때 온라인 필요). 검색창에 <code>zoo</code>.</dd>
+        <dt>Tree / kNN 위젯이 안 보여요</dt><dd>왼쪽 <span class="cat model">Model</span> 칸 확인.</dd>
+        <dt>Test and Score에 점수가 안 나와요</dt><dd><code>Datasets→Data</code>와 <code>Tree→Learner</code>가 <b>둘 다</b> 연결됐는지 확인.</dd>
+        <dt>Tree Viewer가 비어 있어요</dt><dd>Tree의 <b>Model</b>이 Tree Viewer의 <b>Tree</b> 입력에 연결됐는지(연결선 더블클릭으로 확인), Tree에 Datasets가 연결돼 학습이 됐는지 확인.</dd>
+        <dt>Confusion Matrix가 비어 있어요</dt><dd><code>Test and Score</code>(Datasets 아님!)의 <b>Evaluation Results</b>에 연결했는지 확인.</dd>
+        <dt>창이 가려져요</dt><dd>상단 <code>Windows → Display Widgets on Top</code>.</dd>
+      </dl></div>
+    </details>
+    <div class="callout c-info">📌 <b>비지도와 비교</b>: 오늘은 정답(type)을 보고 배웠지만, 군집은 정답 없이 묶기만 해요. 정답 유무 = 지도 vs 비지도!</div>
+  </section>
+
+  <footer>🐯 분류(지도) 실습 가이드 · 4-2 인공지능 「기계학습」 · Orange3 · zoo<br>위젯 입출력은 Orange3 저장소(biolab/orange3) 소스 기준</footer>
+</div>
+<button class="totop" id="totop" title="맨 위로">↑</button>
+<script>
+  (function(){var b=document.getElementById('totop');if(!b)return;
+   window.addEventListener('scroll',function(){b.style.display=window.scrollY>400?'block':'none';});
+   b.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});})();
+</script>
+</body>
+</html>

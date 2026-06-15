@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍊 Orange3 기계학습 실습 가이드 — 목차</title>
+<style>
+  :root{
+    --ink:#222; --muted:#666; --line:#e3e3e3; --bg:#f6f4ef; --card:#fff;
+    --cls:#e65100; --uns:#00695c; --reg:#1b5e20; --tea:#4527a0;
+    --shadow:0 3px 14px rgba(0,0,0,.08); --shadow-h:0 12px 30px rgba(0,0,0,.16); --radius:18px;
+  }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.65;font-size:16px;
+    font-family:"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 18px 80px}
+  .hero{background:linear-gradient(135deg,#ffb74d,#fb8c00 45%,#e65100);color:#fff;padding:46px 28px 38px;border-radius:0 0 30px 30px;box-shadow:0 8px 24px rgba(230,81,0,.3);position:relative;overflow:hidden;text-align:center}
+  .hero::after{content:"🍊";position:absolute;right:18px;top:18px;font-size:60px;opacity:.25}
+  .hero h1{margin:0 0 8px;font-size:31px} .hero p{margin:0;opacity:.96;font-size:16px}
+  .hero .sub{margin-top:10px;font-size:14px;opacity:.9}
+
+  /* 기계학습 지도 */
+  .map{margin:26px 0 8px}
+  .map h2{font-size:18px;margin:0 0 12px;text-align:center;color:var(--muted)}
+  .tree{display:flex;flex-direction:column;align-items:center;gap:0}
+  .root{background:#37474f;color:#fff;font-weight:800;padding:9px 20px;border-radius:12px;box-shadow:var(--shadow)}
+  .branch{display:flex;gap:40px;margin-top:8px;flex-wrap:wrap;justify-content:center}
+  .node{display:flex;flex-direction:column;align-items:center}
+  .node .lab{font-weight:800;padding:7px 16px;border-radius:10px;color:#fff;box-shadow:var(--shadow)}
+  .node.sup .lab{background:#1565c0} .node.uns .lab{background:#00695c}
+  .leaf{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;justify-content:center}
+  .leaf span{background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:4px 11px;font-size:13px;font-weight:700}
+  .conn-line{width:2px;height:14px;background:#90a4ae}
+
+  /* 카드 */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:26px}
+  @media(max-width:560px){.grid{grid-template-columns:1fr}}
+  .card .top .pick{position:absolute;top:14px;right:14px;background:#fff;color:#e65100;font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px}
+  .c-iris .top{background:linear-gradient(135deg,#26c6da,#00838f)} .c-iris .go{color:#00838f}
+  .card{display:flex;flex-direction:column;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:transform .16s,box-shadow .16s}
+  .card:hover{transform:translateY(-4px);box-shadow:var(--shadow-h)}
+  .card .top{padding:20px 18px;color:#fff;position:relative}
+  .card .top .em{font-size:34px;display:block;margin-bottom:6px}
+  .card .top .kind{font-size:12px;font-weight:700;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.45);padding:2px 9px;border-radius:999px}
+  .card .top h3{margin:8px 0 0;font-size:19px}
+  .card .body{padding:14px 18px 18px;flex:1;display:flex;flex-direction:column}
+  .card .body p{margin:0 0 10px;font-size:14px;color:#444}
+  .card .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+  .card .tags span{font-size:12px;font-weight:700;background:#f1f3f4;color:#555;border-radius:6px;padding:3px 8px}
+  .card .go{margin-top:12px;font-weight:800;font-size:14px;display:flex;align-items:center;gap:6px}
+  .c-cls .top{background:linear-gradient(135deg,#fb8c00,#e65100)} .c-cls .go{color:var(--cls)}
+  .c-uns .top{background:linear-gradient(135deg,#26a69a,#00695c)} .c-uns .go{color:var(--uns)}
+  .c-reg .top{background:linear-gradient(135deg,#66bb6a,#1b5e20)} .c-reg .go{color:var(--reg)}
+
+  /* 교사용 배너 */
+  .teacher{margin-top:20px;display:flex;text-decoration:none;color:inherit;background:var(--card);border:2px dashed #b39ddb;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:transform .16s,box-shadow .16s}
+  .teacher:hover{transform:translateY(-3px);box-shadow:var(--shadow-h)}
+  .teacher .left{background:linear-gradient(135deg,#5e35b1,#311b92);color:#fff;padding:22px 24px;display:flex;flex-direction:column;justify-content:center;min-width:170px;text-align:center}
+  .teacher .left .em{font-size:34px} .teacher .left .lock{font-size:11px;font-weight:800;background:#c62828;border-radius:6px;padding:3px 8px;margin-top:8px;display:inline-block}
+  .teacher .right{padding:18px 22px;flex:1} .teacher .right h3{margin:0 0 6px;font-size:18px;color:var(--tea)} .teacher .right p{margin:0;font-size:14px;color:#555}
+  .order{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:30px 0 0;justify-content:center;color:var(--muted);font-size:14px;font-weight:700}
+  .order .b{background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 12px;box-shadow:var(--shadow)}
+  footer{margin-top:36px;text-align:center;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>🍊 Orange3 기계학습 실습 가이드</h1>
+  <p>코딩 0줄로 직접 해보는 인공지능 — 분류 · 비지도 · 회귀</p>
+  <div class="sub">4-2 인공지능 「기계학습」 · 학생 1인 1기기 · 차시당 50분</div>
+</header>
+
+<div class="wrap">
+
+  <!-- 기계학습 지도 -->
+  <div class="map">
+    <h2>🗺️ 오늘 배우는 세 가지가 기계학습 안에서 어디쯤?</h2>
+    <div class="tree">
+      <div class="root">기계학습</div>
+      <div class="conn-line"></div>
+      <div class="branch">
+        <div class="node sup">
+          <div class="lab">지도학습 (정답 있음)</div>
+          <div class="leaf"><span>🐯 분류 = 종류 맞히기</span><span>📺 회귀 = 숫자 맞히기</span></div>
+        </div>
+        <div class="node uns">
+          <div class="lab">비지도학습 (정답 없음)</div>
+          <div class="leaf"><span>⚽ 군집 = 끼리끼리 묶기</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 학생용 가이드 3종 -->
+  <div class="grid">
+    <a class="card c-cls" href="분류_Orange3가이드_동물분류zoo.html">
+      <div class="top"><span class="em">🐯</span><span class="kind">분류 · 지도학습</span><h3>동물 분류 AI 만들기</h3></div>
+      <div class="body">
+        <p>동물의 특징을 보고 <b>종류(포유류·새…)</b>를 맞히는 AI를 만들고 정확도·판단규칙 확인.</p>
+        <div class="tags"><span>zoo</span><span>Tree</span><span>Tree Viewer</span><span>Confusion Matrix</span></div>
+        <div class="go">실습 시작 →</div>
+      </div>
+    </a>
+    <a class="card c-iris" href="비지도_Orange3가이드_iris붓꽃군집.html">
+      <div class="top"><span class="em">🌸</span><span class="pick">⭐ 추천</span><span class="kind">비지도 · 군집</span><h3>붓꽃 끼리끼리 묶기</h3></div>
+      <div class="body">
+        <p>정답 없이 묶은 뒤 <b>실제 품종과 비교</b> → “정답 없이도 찾아냈다!” 비지도의 핵심 통찰.</p>
+        <div class="tags"><span>iris</span><span>k-Means</span><span>정답 비교</span></div>
+        <div class="go">실습 시작 →</div>
+      </div>
+    </a>
+    <a class="card c-uns" href="비지도_Orange3가이드_수학축구군집.html">
+      <div class="top"><span class="em">⚽📐</span><span class="kind">비지도 · 군집(맛보기)</span><h3>끼리끼리 묶기</h3></div>
+      <div class="body">
+        <p>학생 11명 2D 데이터로 <b>위젯 조작을 가볍게</b> 익히는 군집 입문용.</p>
+        <div class="tags"><span>math-football</span><span>k-Means</span><span>조작 연습</span></div>
+        <div class="go">실습 시작 →</div>
+      </div>
+    </a>
+    <a class="card c-reg" href="회귀_Orange3가이드_광고비판매량.html">
+      <div class="top"><span class="em">📺💰</span><span class="kind">회귀 · 지도학습</span><h3>값 예측하기</h3></div>
+      <div class="body">
+        <p>광고비를 넣으면 <b>판매량(숫자)</b>을 예측하는 선형회귀 AI를 만들고 R²로 평가.</p>
+        <div class="tags"><span>advertising</span><span>Linear Regression</span><span>Test and Score</span></div>
+        <div class="go">실습 시작 →</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="order">
+    <span>추천 진행 순서</span>
+    <span class="b">🐯 분류</span><span>→</span><span class="b">⚽ 비지도</span><span>→</span><span class="b">📺 회귀</span>
+  </div>
+
+  <footer>🍊 Orange3 실습 가이드 모음 · 4-2 인공지능 「기계학습」 · 데이터 출처: biolab/orange3 · datasets.biolab.si</footer>
+</div>
+</body>
+</html>

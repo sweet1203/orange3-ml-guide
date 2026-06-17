@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌍 SDGs × 기계학습 — Orange3 내장 데이터셋으로 사회문제 해결 과제</title>
+<style>
+  :root{
+    --orange:#f57c00; --orange-d:#e65100; --orange-l:#ffe0b2; --orange-bg:#fff8f0;
+    --green:#2e7d32; --green-d:#1b5e20; --green-l:#e8f5e9;
+    --blue:#1565c0; --blue-l:#e3f2fd;
+    --teal:#00695c; --teal-l:#e0f2f1;
+    --purple:#6a1b9a; --purple-l:#f3e5f5;
+    --red:#c62828; --red-l:#ffebee;
+    --ink:#2b2b2b; --muted:#6b6b6b; --line:#e6e0d8; --card:#fff; --bg:#f3f6f9;
+    --shadow:0 2px 10px rgba(0,0,0,.06); --shadow-h:0 8px 24px rgba(21,101,192,.18); --radius:16px;
+    --accent:#1565c0; --accent-d:#0d47a1; --accent-l:#e3f2fd;
+  }
+  *{box-sizing:border-box} html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.7;font-size:16px;
+    font-family:"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  .wrap{max-width:980px;margin:0 auto;padding:0 18px 80px}
+  .hero{background:linear-gradient(135deg,#26c6da,#1565c0 55%,#4527a0);color:#fff;
+    padding:42px 26px 34px;border-radius:0 0 28px 28px;box-shadow:0 6px 22px rgba(21,101,192,.3);position:relative;overflow:hidden}
+  .hero::after{content:"🌍🌱💧⚕️⚖️";position:absolute;right:-4px;bottom:-12px;font-size:48px;opacity:.18;letter-spacing:8px;transform:rotate(-8deg)}
+  .hero h1{margin:0 0 6px;font-size:28px;line-height:1.25}
+  .hero p{margin:0;font-size:16px;opacity:.95}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .badge{background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.4);padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600}
+  section{margin-top:30px}
+  h2{font-size:22px;margin:0 0 14px;display:flex;align-items:center;gap:10px}
+  h2 .num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font-size:15px;font-weight:800;flex:none}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow)}
+  .callout{border-radius:14px;padding:14px 18px;margin:14px 0;border-left:6px solid;font-size:15px}
+  .c-goal{background:var(--accent-l);border-color:var(--accent)} .c-goal b{color:var(--accent-d)}
+  .c-tip{background:var(--green-l);border-color:var(--green)} .c-tip b{color:var(--green)}
+  .c-info{background:var(--blue-l);border-color:var(--blue)} .c-info b{color:var(--blue)}
+  .c-warn{background:var(--red-l);border-color:var(--red)} .c-warn b{color:var(--red)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .chip{background:#fff;border:1.5px solid #bbdefb;color:var(--accent-d);border-radius:999px;padding:5px 13px;font-size:13.5px;font-weight:600}
+  .chip.target{background:var(--orange-bg);border-color:var(--orange);color:var(--orange-d)}
+  table{width:100%;border-collapse:collapse;margin:8px 0;font-size:14px;background:#fff;border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top} th{background:var(--accent);color:#fff;font-weight:700} tr:last-child td{border-bottom:0}
+  td code,p code,li code{background:var(--accent-l);color:var(--accent-d);padding:2px 7px;border-radius:6px;font-size:13px;font-weight:700;border:1px solid #bbdefb}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:800;color:#fff;white-space:nowrap}
+  .pill.cls{background:#e65100} .pill.reg{background:#1b5e20} .pill.uns{background:#00695c}
+  .sdg{display:inline-flex;align-items:center;gap:5px;font-weight:800;font-size:12.5px;white-space:nowrap}
+  .sdg .n{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:5px;color:#fff;font-size:12px;font-weight:800;flex:none}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px 18px 22px;margin:14px 0;box-shadow:var(--shadow);border-left:6px solid var(--accent);transition:transform .15s,box-shadow .15s}
+  .step:hover{transform:translateY(-2px);box-shadow:var(--shadow-h)}
+  .step .head{display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+  .step .sn{flex:none;width:34px;height:34px;border-radius:10px;background:var(--accent);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:16px}
+  .step .stitle{font-size:17px;font-weight:800;margin:0}
+  .step ol,.step ul{margin:6px 0 0;padding-left:22px} .step li{margin:5px 0}
+  .step .why{font-size:13.5px;color:var(--muted);font-style:italic;margin-top:6px} .star{color:#f9a825}
+  .typegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:10px 0}
+  .tcard{border-radius:14px;padding:16px 18px;color:#fff;box-shadow:var(--shadow)}
+  .tcard.cls{background:linear-gradient(135deg,#fb8c00,#e65100)}
+  .tcard.reg{background:linear-gradient(135deg,#66bb6a,#1b5e20)}
+  .tcard.uns{background:linear-gradient(135deg,#26a69a,#00695c)}
+  .tcard h4{margin:0 0 6px;font-size:18px} .tcard p{margin:0;font-size:14px;opacity:.96}
+  .tcard .q{font-size:13px;background:rgba(255,255,255,.22);border-radius:8px;padding:6px 10px;margin-top:10px;font-weight:700}
+  .conn{display:flex;align-items:center;gap:7px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0;font-size:14px}
+  .conn .w{font-weight:800;padding:5px 11px;border-radius:8px;white-space:nowrap}
+  .conn .w.out{background:var(--accent);color:#fff} .conn .w.in{background:#fff;border:2px solid var(--accent);color:var(--accent-d)}
+  .conn .port{font-size:12px;font-weight:700;color:#fff;background:#90a4ae;border-radius:6px;padding:2px 8px;white-space:nowrap}
+  .conn .a{color:var(--accent);font-weight:900;font-size:18px}
+  .check{list-style:none;padding:0;margin:6px 0}
+  .check li{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:8px 0;display:flex;gap:10px;align-items:flex-start;cursor:pointer;transition:background .12s}
+  .check li:hover{background:var(--accent-l)} .check input{margin-top:4px;width:18px;height:18px;accent-color:var(--accent);flex:none}
+  .check input:checked + span{text-decoration:line-through;color:var(--muted)}
+  details{background:#fff;border:1px solid var(--line);border-radius:12px;margin:10px 0;overflow:hidden;box-shadow:var(--shadow)}
+  summary{cursor:pointer;padding:14px 18px;font-weight:700;background:var(--purple-l);color:var(--purple);list-style:none;display:flex;align-items:center;gap:8px}
+  summary::-webkit-details-marker{display:none} summary::after{content:"▼";margin-left:auto;font-size:11px;transition:transform .2s}
+  details[open] summary::after{transform:rotate(180deg)}
+  .tbody{padding:6px 18px 14px} .tbody dt{font-weight:700;color:var(--red);margin-top:10px} .tbody dd{margin:3px 0 0}
+  footer{margin-top:40px;text-align:center;color:var(--muted);font-size:13px}
+  .totop{position:fixed;right:18px;bottom:18px;background:var(--accent);color:#fff;border:none;width:48px;height:48px;border-radius:50%;font-size:20px;cursor:pointer;box-shadow:var(--shadow-h);display:none}
+  .homebar{display:flex;justify-content:center;margin:18px 0 4px}
+  .homebtn{display:inline-flex;align-items:center;gap:7px;text-decoration:none;font-weight:800;font-size:15px;color:#fff;background:var(--accent);padding:10px 20px;border-radius:999px;box-shadow:var(--shadow);transition:transform .15s}
+  .homebtn:hover{transform:translateY(-2px)}
+  .quiz .idrow{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  .quiz label{font-weight:700;font-size:14px;display:flex;flex-direction:column;gap:4px;flex:1;min-width:150px}
+  .quiz input,.quiz textarea,.quiz select{font:inherit;border:1.5px solid var(--line);border-radius:10px;padding:9px 11px;width:100%;background:#fff;color:var(--ink)}
+  .quiz input:focus,.quiz textarea:focus,.quiz select:focus{outline:none;border-color:var(--accent)}
+  .qf{margin:12px 0} .qf .qq{font-weight:700;color:#1565c0;margin:0 0 6px}
+  .quiz textarea{resize:vertical}
+  .submitbtn{margin-top:8px;background:var(--accent);color:#fff;border:none;font-weight:800;font-size:16px;padding:12px 22px;border-radius:12px;cursor:pointer;box-shadow:var(--shadow)}
+  .submitbtn:hover{filter:brightness(1.06)} .submitbtn:disabled{opacity:.55;cursor:default}
+  .formstatus{margin:12px 0 0;font-weight:700;min-height:1.2em} .formstatus.ok{color:#2e7d32} .formstatus.err{color:#c62828}
+  .formnote{font-size:12.5px;color:var(--muted);margin:4px 0 0}
+  .small{font-size:12.5px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1>🌍 SDGs × 기계학습 — 내가 직접 정하는 사회문제 해결 과제</h1>
+  <p>Orange3 <b>내장 Datasets</b>만으로, 내가 고른 <b>지속가능발전목표(SDGs)</b>를 푸는 AI를 만든다 — 코딩 0줄</p>
+  <div class="badges">
+    <span class="badge">🍊 도구: Orange3</span>
+    <span class="badge">📦 데이터: 내장 Datasets (다운로드 X)</span>
+    <span class="badge">🎯 분류 · 회귀 · 군집 중 선택</span>
+    <span class="badge">⏱️ 약 50분</span>
+    <span class="badge">⌨️ 코딩 0줄</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="homebar"><a class="homebtn" href="index.html">🏠 실습 목록으로</a></div>
+
+  <div class="callout c-goal">🎯 <b>과제 한 줄 요약</b> — SDGs 17개 목표 중 <b>하나</b>를 골라, 그 문제와 어울리는 <b>Orange 내장 데이터셋</b>을 하나 정하고, <b>분류·회귀·군집</b> 중 알맞은 방법으로 AI를 만들어 결과를 설명한다.</div>
+
+  <!-- SDGs 소개 -->
+  <section>
+    <h2><span class="num">1</span> SDGs가 뭐예요? 🌱</h2>
+    <div class="card">
+      <p><b>SDGs</b>(Sustainable Development Goals, 지속가능발전목표)는 유엔(UN)이 <b>2015년</b>에 약속한 <b>17개 목표</b>예요. <b>2030년</b>까지 빈곤·교육·보건·환경 같은 전 세계 문제를 함께 해결하자는 약속이죠.</p>
+      <p>이 17개 목표 중에는 <b>인공지능(기계학습)으로 도울 수 있는 문제</b>가 많아요. 교과서 사례처럼 — 식량(수확량 예측), 해양 생태계(멸종위기 동물 추적·불법조업 탐지), 건강(칼로리·질병 예측)에 이미 AI가 쓰이고 있어요.</p>
+      <div class="callout c-info" style="margin-bottom:0">💡 오늘은 <b>거창한 데이터를 새로 모으지 않아도</b> 돼요. Orange가 이미 갖고 있는 <b>내장 데이터셋</b>으로 “이 문제는 AI로 이렇게 풀 수 있겠다!”를 <b>체험</b>하는 게 목표예요.</div>
+    </div>
+  </section>
+
+  <!-- 유형 고르기 -->
+  <section>
+    <h2><span class="num">2</span> 먼저 정할 것 — 어떤 ‘유형’의 문제일까? 🧭</h2>
+    <div class="card">
+      <p>내가 풀려는 SDGs 문제에서 <b>“무엇을 알고 싶은가?”</b>를 보면 기계학습 유형이 정해져요. (교과서 190~191쪽)</p>
+      <div class="typegrid">
+        <div class="tcard cls">
+          <h4>🐯 분류 <span class="small" style="opacity:.85">(지도)</span></h4>
+          <p>맞히려는 정답이 <b>종류·범주</b>(글자). 예: 병이다/아니다, 동물 종류.</p>
+          <div class="q">정답이 “종류”면 → 분류</div>
+        </div>
+        <div class="tcard reg">
+          <h4>📈 회귀 <span class="small" style="opacity:.85">(지도)</span></h4>
+          <p>맞히려는 정답이 <b>숫자</b>(연속값). 예: 가격, 칼로리, 판매량.</p>
+          <div class="q">정답이 “숫자”면 → 회귀</div>
+        </div>
+        <div class="tcard uns">
+          <h4>🧩 군집 <span class="small" style="opacity:.85">(비지도)</span></h4>
+          <p><b>정답이 없을</b> 때 비슷한 것끼리 <b>끼리끼리 묶기</b>. 예: 비슷한 지역·고객 그룹.</p>
+          <div class="q">정답이 없으면 → 군집</div>
+        </div>
+      </div>
+      <div class="callout c-tip" style="margin-bottom:0">🟢 <b>핵심 한 문장</b>: 정답이 <b>글자(종류)</b>면 분류, <b>숫자</b>면 회귀, <b>정답 자체가 없으면</b> 군집!</div>
+    </div>
+  </section>
+
+  <!-- 데이터셋 참고표 (핵심) -->
+  <section>
+    <h2><span class="num">3</span> 📋 SDGs ↔ Orange 내장 데이터셋 참고표 (여기서 골라요)</h2>
+    <div class="card">
+      <p>아래는 <code>Datasets</code> 위젯 검색창에 이름을 넣으면 바로 받을 수 있는 데이터들이에요. 마음에 드는 줄을 하나 골라 과제를 시작하세요.</p>
+      <table>
+        <thead><tr><th>연결되는 SDG</th><th>데이터셋(검색어)</th><th>유형</th><th>이런 걸 풀어요</th></tr></thead>
+        <tbody>
+          <tr><td><span class="sdg"><span class="n" style="background:#4c9f38">3</span> 건강한 삶</span></td><td><code>heart_disease</code></td><td><span class="pill cls">분류</span></td><td>나이·혈압·콜레스테롤로 <b>심장병 여부</b> 예측</td></tr>
+          <tr><td><span class="sdg"><span class="n" style="background:#4c9f38">3</span> 건강한 삶</span></td><td><code>breast cancer</code></td><td><span class="pill cls">분류</span></td><td>검사 수치로 종양 <b>양성/악성</b> 분류</td></tr>
+          <tr><td><span class="sdg"><span class="n" style="background:#e5243b">1</span> 빈곤 종식 · <span class="n" style="background:#a21942">8</span> 일자리</span></td><td><code>adult</code> (census income)</td><td><span class="pill cls">분류</span></td><td>직업·교육 정보로 <b>소득 수준</b> 예측 → 불평등 분석</td></tr>
+          <tr><td><span class="sdg"><span class="n" style="background:#a21942">8</span> 일자리 · <span class="n" style="background:#fd6925">9</span> 산업·혁신</span></td><td><code>advertising</code></td><td><span class="pill reg">회귀</span></td><td>광고비로 <b>판매량(숫자)</b> 예측 <span class="small">(가이드 있음↓)</span></td></tr>
+          <tr><td><span class="sdg"><span class="n" style="background:#fd9d24">11</span> 지속가능 도시</span></td><td><code>housing</code></td><td><span class="pill reg">회귀</span></td><td>동네 특성으로 <b>집값(숫자)</b> 예측</td></tr>
+          <tr><td><span class="sdg"><span class="n" style="background:#56c02b">15</span> 육상 생태계</span></td><td><code>zoo</code></td><td><span class="pill cls">분류</span></td><td>동물 특징으로 <b>동물 종류</b> 분류 <span class="small">(가이드 있음↓)</span></td></tr>
+          <tr><td><span class="sdg"><span class="n" style="background:#56c02b">15</span> 육상 생태계</span></td><td><code>iris</code></td><td><span class="pill uns">군집</span></td><td>정답 없이 <b>붓꽃을 끼리끼리</b> 묶고 실제 품종과 비교 <span class="small">(가이드 있음↓)</span></td></tr>
+          <tr><td><span class="sdg"><span class="n" style="background:#bf8b2e">12</span> 책임감 있는 소비·생산</span></td><td><code>glass</code></td><td><span class="pill cls">분류</span></td><td>성분으로 <b>유리 종류</b> 분류 → 재활용 분리</td></tr>
+          <tr><td><span class="sdg"><span class="n" style="background:#bf8b2e">12</span> 책임감 있는 소비·생산</span></td><td><code>wine</code></td><td><span class="pill cls">분류</span></td><td>성분으로 <b>와인 종류/등급</b> 분류 → 품질 관리</td></tr>
+          <tr><td><span class="sdg"><span class="n" style="background:#dd1367">10</span> 불평등 완화</span></td><td><code>titanic</code></td><td><span class="pill cls">분류</span></td><td>성별·객실등급으로 <b>생존</b> 예측 → 불평등 토론</td></tr>
+        </tbody>
+      </table>
+      <div class="callout c-info">🔎 <b>찾는 법</b>: <code>Datasets</code> 위젯 더블클릭 → 위 검색어 입력 → 해당 줄 더블클릭(처음 한 번 인터넷으로 자동 다운로드). 표의 데이터가 <b>아닌 다른 내장 데이터</b>를 골라도 좋아요!</div>
+      <div class="callout c-warn" style="margin-bottom:0">🟠 <b>버전 주의</b>: Orange 버전에 따라 목록 이름이 조금 다를 수 있어요. 검색해서 안 나오면 비슷한 이름(예: <code>heart</code>, <code>income</code>)으로 찾아보세요.</div>
+    </div>
+  </section>
+
+  <!-- 이미 만들어진 예시 가이드 -->
+  <section>
+    <h2><span class="num">4</span> 막막하면? 이미 만든 예시 3개를 따라 해봐요 🧩</h2>
+    <div class="card">
+      <p>아래 3개는 위 표의 데이터로 <b>처음부터 끝까지</b> 만드는 법이 담겨 있어요. 내 과제와 <b>같은 유형</b>인 가이드를 보면 워크플로우를 그대로 흉내 낼 수 있어요.</p>
+      <ul>
+        <li><span class="pill cls">분류</span> <a href="분류_Orange3가이드_동물분류zoo.html"><b>동물 분류 AI</b> (zoo)</a> → SDG 15 생태계. <code>Tree</code>·<code>Confusion Matrix</code>로 정확도 확인.</li>
+        <li><span class="pill uns">군집</span> <a href="비지도_Orange3가이드_iris붓꽃군집.html"><b>붓꽃 끼리끼리 묶기</b> (iris)</a> → SDG 15 생태계. 정답 없이 묶고 실제 품종과 비교.</li>
+        <li><span class="pill reg">회귀</span> <a href="회귀_Orange3가이드_광고비판매량.html"><b>값 예측하기</b> (advertising)</a> → SDG 8·9. 광고비로 판매량(숫자) 예측, R²로 평가.</li>
+      </ul>
+      <p class="small">위 3개 가이드의 위젯 연결을 그대로 두고, <b>Datasets만 내 SDG 데이터로 바꾸면</b> 절반은 끝나요.</p>
+    </div>
+  </section>
+
+  <!-- 과제 단계 -->
+  <section>
+    <h2><span class="num">5</span> 과제 6단계 👣</h2>
+
+    <div class="step">
+      <div class="head"><span class="sn">1</span><p class="stitle">SDG 목표 1개 고르기</p></div>
+      <p>위 참고표나 SDGs 17개 목표 중 <b>관심 가는 문제 하나</b>를 정해요. (예: SDG 3 건강 — “심장병을 미리 알 수 있을까?”)</p>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="sn">2</span><p class="stitle">데이터셋 + 유형 정하기</p><span class="why" style="font-style:normal">정답이 글자→분류 / 숫자→회귀 / 없음→군집</span></div>
+      <p>그 문제에 어울리는 <b>내장 데이터셋</b>을 하나 고르고, <b>맞히려는 정답(또는 ‘정답 없음’)</b>을 보고 유형을 정해요.</p>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="sn">3</span><p class="stitle"><code>Datasets</code>로 불러와 표로 확인</p></div>
+      <div class="conn"><span class="w out">Datasets</span><span class="port">Data ▸</span><span class="a">──▶</span><span class="port">▸ Data</span><span class="w in">Data Table</span></div>
+      <p>데이터가 어떤 열(특징)과 정답(target)으로 되어 있는지 <code>Data Table</code>로 눈으로 확인해요.</p>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="sn">4</span><p class="stitle">워크플로우 만들기 (유형별)</p></div>
+      <p style="font-weight:700;color:var(--orange-d);margin:6px 0 2px">🐯 분류라면</p>
+      <div class="conn"><span class="w out">Datasets</span><span class="a">──▶</span><span class="w in">Tree</span><span class="a">＋</span><span class="w in">Test and Score</span><span class="small">(Data + Learner 둘 다 연결)</span></div>
+      <p style="font-weight:700;color:var(--green-d);margin:10px 0 2px">📈 회귀라면</p>
+      <div class="conn"><span class="w out">Datasets</span><span class="a">──▶</span><span class="w in">Linear Regression</span><span class="a">＋</span><span class="w in">Test and Score</span></div>
+      <p style="font-weight:700;color:var(--teal);margin:10px 0 2px">🧩 군집이라면</p>
+      <div class="conn"><span class="w out">Datasets</span><span class="a">──▶</span><span class="w in">k-Means</span><span class="a">──▶</span><span class="w in">Scatter Plot</span><span class="small">(색=Cluster)</span></div>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="sn">5</span><p class="stitle">결과·정확도 확인</p></div>
+      <ul>
+        <li>🐯 분류: <code>Test and Score</code>의 <b>CA(정확도)</b> / <code>Confusion Matrix</code>로 헷갈린 것 보기</li>
+        <li>📈 회귀: <code>Test and Score</code>의 <b>R²</b>(1에 가까울수록 좋음) / RMSE</li>
+        <li>🧩 군집: <code>Silhouette</code> 점수, 또는 <code>Scatter Plot</code>으로 묶임 눈으로 확인</li>
+      </ul>
+    </div>
+
+    <div class="step">
+      <div class="head"><span class="sn">6</span><p class="stitle">한 문장으로 결론 쓰기</p></div>
+      <p>“<b>SDG ○○</b> 문제를, <b>○○ 데이터</b>로, <b>○○(분류/회귀/군집)</b> 방법을 써서, 정확도 <b>○○</b>로 풀 수 있었다.” — 아래 제출 폼에 적어요.</p>
+    </div>
+  </section>
+
+  <!-- 체크 -->
+  <section>
+    <h2><span class="num">6</span> 스스로 점검 ✅</h2>
+    <div class="card">
+      <ul class="check">
+        <li><input type="checkbox"><span>내가 고른 SDG 목표를 한 문장으로 말할 수 있다.</span></li>
+        <li><input type="checkbox"><span>이 문제가 <b>분류/회귀/군집</b> 중 무엇인지, 왜 그런지 설명할 수 있다.</span></li>
+        <li><input type="checkbox"><span><code>Datasets</code>로 데이터를 불러와 <b>특징과 정답</b>을 구분했다.</span></li>
+        <li><input type="checkbox"><span>모델을 만들고 <b>정확도(CA/R²)</b> 또는 군집 결과를 확인했다.</span></li>
+        <li><input type="checkbox"><span>“이 AI로 이 사회문제를 어떻게 도울 수 있을까?”를 한 문장으로 적었다.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 제출 안내 -->
+  <section>
+    <h2><span class="num">7</span> 과제 제출 📤</h2>
+    <div class="card">
+      <div class="callout c-info" style="margin-top:0">📌 <b>완성한 Orange3 파일(.ows)과 과제 답안</b>은 <b>리로스쿨</b>로 제출해요. (선생님 안내 참고)</div>
+    </div>
+  </section>
+
+  <!-- 교사용 -->
+  <section>
+    <h2><span class="num">8</span> 자주 나오는 문제 (교사용) 🛟</h2>
+    <details>
+      <summary>🟢 펼쳐서 보기 — 잘 안 될 때 점검</summary>
+      <div class="tbody"><dl>
+        <dt>Datasets 목록이 안 떠요 / 검색이 안 돼요</dt><dd>처음 받을 때 <b>인터넷 필요</b>(서버: datasets.biolab.si). 검색어를 짧게(<code>heart</code>, <code>housing</code>).</dd>
+        <dt>회귀 점수(R²)가 안 보이고 CA만 나와요</dt><dd>정답(target)이 <b>숫자형</b>이어야 회귀 점수가 나와요. 데이터가 분류용이면 자연히 CA가 나옵니다(정상).</dd>
+        <dt>Test and Score에 점수가 안 나와요</dt><dd><code>Datasets→Data</code>와 <code>모델→Learner</code>가 <b>둘 다</b> 연결됐는지 확인.</dd>
+        <dt>군집인데 어떻게 평가해요?</dt><dd>정답이 없어 정확도가 없어요. <code>Silhouette Plot</code> 점수, 또는 iris처럼 <b>실제 라벨과 비교</b>해 묶임을 평가.</dd>
+        <dt>학생들이 데이터 고르기 어려워해요</dt><dd>참고표에서 <b>유형별 1개씩(분류·회귀·군집)</b>만 지정해 선택지를 좁혀 주세요.</dd>
+        <dt>창이 가려져요</dt><dd>상단 <code>Windows → Display Widgets on Top</code>.</dd>
+      </dl></div>
+    </details>
+    <div class="callout c-info">📌 <b>평가 포인트</b>: 정확도 숫자보다 <b>“문제→유형 판단→데이터→방법→사회적 의미”</b>의 연결을 한 문장으로 설명하는지를 보세요. (교과서 188~191쪽 ‘기계학습으로 풀 수 있는 문제’와 연결)</div>
+  </section>
+
+  <div class="homebar"><a class="homebtn" href="index.html">🏠 실습 목록으로</a></div>
+  <footer>🌍 SDGs × 기계학습 과제 · 4-2 인공지능 「기계학습」 · Orange3 내장 Datasets<br>데이터 출처: biolab/orange3 · datasets.biolab.si · SDGs: UN 지속가능발전목표 17</footer>
+</div>
+<button class="totop" id="totop" title="맨 위로">↑</button>
+<script>
+  (function(){var b=document.getElementById('totop');if(!b)return;
+   window.addEventListener('scroll',function(){b.style.display=window.scrollY>400?'block':'none';});
+   b.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});})();
+</script>
+</body>
+</html>
